@@ -15,6 +15,7 @@
     
     <modules>
         <module>synapsedb-core</module>
+        <module>examples</module>
     </modules>
     
     <properties>
