@@ -85,4 +85,36 @@ public class Document {
     public String toString() {
         return "SynapseDoc{id='" + id + "', fields=" + fields + "}";
     }
+
+    public boolean isValid() {
+        return id != null && !id.trim().isEmpty();
+    }
+
+
+    public String getValidationErrors() {
+        List<String> errors = new ArrayList<>();
+
+        if (id == null || id.trim().isEmpty()) {
+            errors.add("id is required and must not be blank");
+        }
+
+        for (Map.Entry<String, List<Object>> entry : fields.entrySet()) {
+            String name = entry.getKey();
+            List<Object> values = entry.getValue();
+
+            if (name == null || name.trim().isEmpty()) {
+                errors.add("field name must not be null or blank");
+            } else if (values == null) {
+                errors.add("field '" + name + "' has a null values list");
+            } else {
+                for (int i = 0; i < values.size(); i++) {
+                    if (values.get(i) == null) {
+                        errors.add("field '" + name + "' has null value at index " + i);
+                    }
+                }
+            }
+        }
+
+        return String.join("; ", errors);
+    }
 }
