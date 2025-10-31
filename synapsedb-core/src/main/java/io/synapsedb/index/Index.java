@@ -17,10 +17,10 @@ import org.apache.lucene.store.NIOFSDirectory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
-
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -85,8 +85,7 @@ public class Index implements Closeable {
      * Initialize the index
      */
     private void initialize() throws IOException, IndexCreationException {
-        stateLock.writeLock().lock();
-        try {
+        try (LockGuard ignored = LockGuard.of(stateLock.writeLock())) {
             // Create directory
             this.directory = createDirectory(indexPath);
 
@@ -130,8 +129,25 @@ public class Index implements Closeable {
             metadata.setState(IndexState.FAILED);
             cleanup();
             throw new IndexCreationException(indexName, e);
-        } finally {
-            stateLock.writeLock().unlock();
+        }
+    }
+
+    // Auto-closeable lock helper
+    private static class LockGuard implements AutoCloseable {
+        private final Lock lock;
+
+        private LockGuard(Lock lock) {
+            this.lock = lock;
+            this.lock.lock();
+        }
+
+        public static LockGuard of(Lock lock) {
+            return new LockGuard(lock);
+        }
+
+        @Override
+        public void close() {
+            lock.unlock();
         }
     }
 
