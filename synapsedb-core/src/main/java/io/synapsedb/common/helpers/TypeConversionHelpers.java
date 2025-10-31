@@ -5,6 +5,7 @@ import org.apache.lucene.util.BytesRef;
 import java.util.Date;
 
 public class TypeConversionHelpers {
+    private TypeConversionHelpers(){}
     // ============ Type Conversion Helpers ============
 
     public static long toLong(Object value) {
