@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests with actual Lucene indexing and searching
+ * @author Amit Tiwari
  */
 class IntegrationTest {
 

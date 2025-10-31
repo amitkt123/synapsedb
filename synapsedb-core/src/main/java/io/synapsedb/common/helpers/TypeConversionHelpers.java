@@ -4,6 +4,10 @@ import org.apache.lucene.util.BytesRef;
 
 import java.util.Date;
 
+/**
+ * Helper utilities for type conversions between Java and Lucene/stored types
+ * @author Amit Tiwari
+ */
 public class TypeConversionHelpers {
     private TypeConversionHelpers(){}
     // ============ Type Conversion Helpers ============

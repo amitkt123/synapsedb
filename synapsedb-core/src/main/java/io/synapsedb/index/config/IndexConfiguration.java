@@ -7,6 +7,7 @@ import java.util.Properties;
 /**
  * Global configuration for the index system.
  * Provides system-wide defaults and configuration loading.
+ * @author Amit Tiwari
  */
 public class IndexConfiguration {
 
@@ -92,9 +93,9 @@ public class IndexConfiguration {
         this.maxResultWindow = getIntProperty("index.max.result.window", DEFAULT_MAX_RESULT_WINDOW);
 
         // Thread pools
-        this.indexThreadPoolSize = getIntProperty("thread pool.index.size", DEFAULT_INDEX_THREAD_POOL_SIZE);
-        this.searchThreadPoolSize = getIntProperty("thread pool.search.size", DEFAULT_SEARCH_THREAD_POOL_SIZE);
-        this.refreshThreadPoolSize = getIntProperty("thread pool.refresh.size", DEFAULT_REFRESH_THREAD_POOL_SIZE);
+        this.indexThreadPoolSize = getIntProperty("thread.pool.index.size", DEFAULT_INDEX_THREAD_POOL_SIZE);
+        this.searchThreadPoolSize = getIntProperty("thread.pool.search.size", DEFAULT_SEARCH_THREAD_POOL_SIZE);
+        this.refreshThreadPoolSize = getIntProperty("thread.pool.refresh.size", DEFAULT_REFRESH_THREAD_POOL_SIZE);
 
         // Caching
         this.enableQueryCache = getBooleanProperty("cache.query.enabled", DEFAULT_ENABLE_QUERY_CACHE);
@@ -212,12 +213,17 @@ public class IndexConfiguration {
         }
 
         public Builder indexThreadPoolSize(int size) {
-            properties.setProperty("threadpool.index.size", String.valueOf(size));
+            properties.setProperty("thread.pool.index.size", String.valueOf(size));
             return this;
         }
 
         public Builder searchThreadPoolSize(int size) {
-            properties.setProperty("threadpool.search.size", String.valueOf(size));
+            properties.setProperty("thread.pool.search.size", String.valueOf(size));
+            return this;
+        }
+
+        public Builder refreshThreadPoolSize(int size) {
+            properties.setProperty("thread.pool.refresh.size", String.valueOf(size));
             return this;
         }
 
@@ -255,27 +261,25 @@ public class IndexConfiguration {
      * Get a summary of the configuration
      */
     public String getSummary() {
-        StringBuilder sb = new StringBuilder("IndexConfiguration:\n");
-        sb.append("  Paths:\n");
-        sb.append("    Base: ").append(basePath).append("\n");
-        sb.append("    Temp: ").append(tempPath).append("\n");
-        sb.append("    Backup: ").append(backupPath).append("\n");
-        sb.append("  Limits:\n");
-        sb.append("    Max indices: ").append(maxIndices).append("\n");
-        sb.append("    Max shards per node: ").append(maxShardsPerNode).append("\n");
-        sb.append("    Max index size: ").append(maxIndexSizeBytes / (1024.0 * 1024 * 1024)).append(" GB\n");
-        sb.append("    Max result window: ").append(maxResultWindow).append("\n");
-        sb.append("  Thread Pools:\n");
-        sb.append("    Index: ").append(indexThreadPoolSize).append("\n");
-        sb.append("    Search: ").append(searchThreadPoolSize).append("\n");
-        sb.append("    Refresh: ").append(refreshThreadPoolSize).append("\n");
-        sb.append("  Caching:\n");
-        sb.append("    Query cache: ").append(enableQueryCache).append(" (").append(queryCacheSizeBytes / (1024.0 * 1024)).append(" MB)\n");
-        sb.append("    Request cache: ").append(enableRequestCache).append(" (").append(requestCacheSizeBytes / (1024.0 * 1024)).append(" MB)\n");
-        sb.append("  Monitoring:\n");
-        sb.append("    Metrics: ").append(enableMetrics).append("\n");
-        sb.append("    Slow log: ").append(enableSlowLog).append(" (threshold: ").append(slowLogThresholdMs).append(" ms)\n");
-        return sb.toString();
+        return "IndexConfiguration:\n" + "  Paths:\n" +
+                "    Base: " + basePath + "\n" +
+                "    Temp: " + tempPath + "\n" +
+                "    Backup: " + backupPath + "\n" +
+                "  Limits:\n" +
+                "    Max indices: " + maxIndices + "\n" +
+                "    Max shards per node: " + maxShardsPerNode + "\n" +
+                "    Max index size: " + maxIndexSizeBytes / (1024.0 * 1024 * 1024) + " GB\n" +
+                "    Max result window: " + maxResultWindow + "\n" +
+                "  Thread Pools:\n" +
+                "    Index: " + indexThreadPoolSize + "\n" +
+                "    Search: " + searchThreadPoolSize + "\n" +
+                "    Refresh: " + refreshThreadPoolSize + "\n" +
+                "  Caching:\n" +
+                "    Query cache: " + enableQueryCache + " (" + queryCacheSizeBytes / (1024.0 * 1024) + " MB)\n" +
+                "    Request cache: " + enableRequestCache + " (" + requestCacheSizeBytes / (1024.0 * 1024) + " MB)\n" +
+                "  Monitoring:\n" +
+                "    Metrics: " + enableMetrics + "\n" +
+                "    Slow log: " + enableSlowLog + " (threshold: " + slowLogThresholdMs + " ms)\n";
     }
 
     @Override

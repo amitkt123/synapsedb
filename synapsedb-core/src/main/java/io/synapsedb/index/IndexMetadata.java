@@ -8,6 +8,9 @@ import java.util.UUID;
 /**
  * Metadata information about a SynapseDB index.
  * Tracks creation time, version, mappings, and other index-level information.
+ *
+ * Metadata about an index (settings, mappings, state)
+ * @author Amit Tiwari
  */
 public class IndexMetadata {
 

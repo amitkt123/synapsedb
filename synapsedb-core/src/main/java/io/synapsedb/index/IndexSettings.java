@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Configuration settings for a SynapseDB index.
  * Provides control over Lucene IndexWriter configuration, merge policies, and performance settings.
+ * Settings that control index behavior (refresh interval, merge policy, etc.)
+ * @author Amit Tiwari
  */
 public class IndexSettings {
 

@@ -5,6 +5,9 @@ import java.util.*;
 /**
  * SynapseDB's abstraction over Lucene Document
  * Provides a cleaner, more flexible API for document manipulation
+ *
+ * Represents a document stored in SynapseDB with id and fields
+ * @author Amit Tiwari
  */
 public class Document {
     private String id;  // Mandatory unique identifier

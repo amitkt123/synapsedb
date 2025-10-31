@@ -27,6 +27,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Core index abstraction that manages a single Lucene index.
  * Handles IndexWriter lifecycle, refresh/flush operations, and provides thread-safe access.
+ * Represents an index (wrapper around Lucene Directory, writer, readers etc.)
+ * @author Amit Tiwari
  */
 public class Index implements Closeable {
 

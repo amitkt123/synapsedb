@@ -8,6 +8,10 @@ import org.apache.lucene.document.Document;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Example usages for SynapseDB Document conversion utilities
+ * @author Amit Tiwari
+ */
 public class Main {
 
     public static void main(String[] args) {

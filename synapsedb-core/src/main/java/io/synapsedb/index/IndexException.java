@@ -2,6 +2,7 @@ package io.synapsedb.index;
 
 /**
  * Base exception for all index-related errors in SynapseDB
+ * @author Amit Tiwari
  */
 public class IndexException extends Exception {
 

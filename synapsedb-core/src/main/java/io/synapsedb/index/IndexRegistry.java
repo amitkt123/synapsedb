@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * Registry of indices (in-memory and on-disk discovery)
+ * @author Amit Tiwari
  * Central registry for managing multiple indices.
  * Thread-safe repository that tracks all indices in the system.
  */

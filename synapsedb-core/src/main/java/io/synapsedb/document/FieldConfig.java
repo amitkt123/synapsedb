@@ -1,6 +1,8 @@
 package io.synapsedb.document;
 
 /**
+ * Configuration for a document field (stored, indexed, tokenized, type)
+ * @author Amit Tiwari
  * Configuration for how a field should be indexed and stored
  */
 public class FieldConfig {

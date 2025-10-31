@@ -6,6 +6,10 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 
+/**
+ * Utility class for indexing documents asynchronously with batching.
+ * @author Amit Tiwari
+ */
 public class DocumentIndexer {
     private final IndexWriter indexWriter;
 

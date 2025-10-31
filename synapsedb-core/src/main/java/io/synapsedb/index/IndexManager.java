@@ -12,6 +12,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Main entry point for index management in SynapseDB.
  * Provides high-level API for creating, managing, and operating on indices.
+ * Manages lifecycle of indices, creation, deletion and retrieval
+ * @author Amit Tiwari
  */
 public class IndexManager implements Closeable {
 

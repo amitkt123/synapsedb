@@ -3,6 +3,7 @@ package io.synapsedb.index;
 /**
  * Represents the lifecycle state of an index in SynapseDB.
  * Indices transition through these states during their lifetime.
+ * @author Amit Tiwari
  */
 public enum IndexState {
     /**

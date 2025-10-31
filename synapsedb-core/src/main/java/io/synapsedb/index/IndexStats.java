@@ -7,6 +7,9 @@ import java.util.concurrent.atomic.LongAdder;
 /**
  * Real-time statistics for index operations.
  * Thread-safe implementation using atomic operations.
+ *
+ * Simple holder for index statistics such as doc count and size
+ * @author Amit Tiwari
  */
 public class IndexStats {
 
