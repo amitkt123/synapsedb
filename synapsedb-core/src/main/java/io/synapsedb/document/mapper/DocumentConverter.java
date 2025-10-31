@@ -15,6 +15,9 @@ import java.util.*;
  */
 public class DocumentConverter {
 
+    private DocumentConverter() {
+        // Prevent instantiation
+    }
     private static final String ID_FIELD = "_id";
 
     /**

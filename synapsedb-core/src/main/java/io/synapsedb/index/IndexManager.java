@@ -1,5 +1,7 @@
 package io.synapsedb.index;
 
+import io.synapsedb.exception.*;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;

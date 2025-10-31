@@ -1,5 +1,8 @@
 package io.synapsedb.index;
 
+import io.synapsedb.exception.IndexAlreadyExistsException;
+import io.synapsedb.exception.IndexNotFoundException;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

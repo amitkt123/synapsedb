@@ -2,6 +2,8 @@ package io.synapsedb.index;
 
 import io.synapsedb.document.Document;
 import io.synapsedb.document.mapper.DocumentConverter;
+import io.synapsedb.exception.IndexCreationException;
+import io.synapsedb.exception.InvalidIndexStateException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.*;
