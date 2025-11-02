@@ -49,6 +49,7 @@ logs/
 data/
 indices/
 snapshots/
+docs
 *.index
 *.lock
 

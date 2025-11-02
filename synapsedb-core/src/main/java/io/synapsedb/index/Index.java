@@ -4,6 +4,10 @@ import io.synapsedb.document.Document;
 import io.synapsedb.document.mapper.DocumentConverter;
 import io.synapsedb.exception.IndexCreationException;
 import io.synapsedb.exception.InvalidIndexStateException;
+import io.synapsedb.query.QueryBuilder;
+import io.synapsedb.query.validation.ValidationResult;
+import io.synapsedb.search.SearchRequest;
+import io.synapsedb.search.SearchResponse;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.*;
@@ -11,6 +15,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 
 import org.apache.lucene.store.MMapDirectory;
@@ -102,13 +107,10 @@ public class Index implements Closeable {
             this.searcherManager = new SearcherManager(indexWriter, true, false, new SearcherFactory());
 
             // Initialize background tasks
-            this.scheduler = Executors.newScheduledThreadPool(2, new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r, "index-" + indexName + "-scheduler");
-                    t.setDaemon(true);
-                    return t;
-                }
+            this.scheduler = Executors.newScheduledThreadPool(2, r -> {
+                Thread t = new Thread(r, "index-" + indexName + "-scheduler");
+                t.setDaemon(true);
+                return t;
             });
 
             // Schedule refresh task if auto-refresh is enabled
@@ -387,12 +389,99 @@ public class Index implements Closeable {
     }
 
     /**
-     * Release a searcher after use
+     * Release an IndexSearcher after use
      */
     public void releaseSearcher(IndexSearcher searcher) throws IOException {
         searcherManager.release(searcher);
         stats.decrementSearchCurrent();
     }
+
+    // ==================== High-Level Search API ====================
+
+    /**
+     * Execute a search request using the Query Framework.
+     * This is the main entry point for the high-level search API.
+     *
+     * @param request SearchRequest with query and options
+     * @return SearchResponse with results
+     * @throws IOException If search fails
+     * @throws InvalidIndexStateException If index is not in valid state
+     */
+    public SearchResponse search(SearchRequest request) throws IOException, InvalidIndexStateException {
+        ensureOpen();
+
+        long startTime = System.currentTimeMillis();
+        SearchResponse.Builder responseBuilder = new SearchResponse.Builder();
+
+        try {
+            // Validate query
+            QueryBuilder queryBuilder = request.getQuery();
+            if (queryBuilder == null) {
+                responseBuilder.addError("Query is required");
+                return responseBuilder.build();
+            }
+
+            ValidationResult validation = queryBuilder.validate();
+            if (!validation.isValid()) {
+                for (String error : validation.getErrors().stream()
+                        .map(Object::toString)
+                        .toList()) {
+                    responseBuilder.addError(error);
+                }
+                return responseBuilder.build();
+            }
+
+            // Add warnings if any
+            for (String warning : validation.getWarnings().stream()
+                    .map(Object::toString)
+                    .toList()) {
+                responseBuilder.addWarning(warning);
+            }
+
+            // Convert to Lucene query
+            Query luceneQuery = queryBuilder.toLuceneQuery();
+
+            // Execute search
+            IndexSearcher searcher = acquireSearcher();
+            try {
+                long queryStartTime = System.currentTimeMillis();
+                int totalToFetch = request.getFrom() + request.getSize();
+                TopDocs topDocs = searcher.search(luceneQuery, totalToFetch);
+                long queryTime = System.currentTimeMillis() - queryStartTime;
+
+                responseBuilder.totalHits(topDocs.totalHits.value);
+
+                // Convert documents
+                long fetchStartTime = System.currentTimeMillis();
+                int start = request.getFrom();
+                int end = Math.min(start + request.getSize(), topDocs.scoreDocs.length);
+
+                for (int i = start; i < end; i++) {
+                    org.apache.lucene.document.Document luceneDoc = searcher.doc(topDocs.scoreDocs[i].doc);
+                    io.synapsedb.document.Document synapseDoc = DocumentConverter.fromLuceneDocument(luceneDoc);
+                    responseBuilder.addDocument(synapseDoc);
+                }
+                long fetchTime = System.currentTimeMillis() - fetchStartTime;
+
+                stats.recordSearch(queryTime, fetchTime);
+
+            } finally {
+                releaseSearcher(searcher);
+            }
+
+            long endTime = System.currentTimeMillis();
+            responseBuilder.tookMillis(endTime - startTime);
+
+            return responseBuilder.build();
+
+        } catch (Exception e) {
+            responseBuilder.addError("Search failed: " + e.getMessage());
+            return responseBuilder.build();
+        }
+    }
+
+
+    // ==================== Getters ====================
 
     // ==================== State Management ====================
 
@@ -473,6 +562,16 @@ public class Index implements Closeable {
         IndexState currentState = state.get();
         if (!currentState.isWriteable()) {
             throw new InvalidIndexStateException(indexName, currentState, "write");
+        }
+    }
+
+    /**
+     * Check if index is open and ready for operations
+     */
+    private void ensureOpen() throws InvalidIndexStateException {
+        IndexState currentState = state.get();
+        if (currentState != IndexState.OPEN) {
+            throw new InvalidIndexStateException(indexName, currentState, "operation");
         }
     }
 

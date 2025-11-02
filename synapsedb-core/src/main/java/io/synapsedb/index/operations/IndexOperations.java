@@ -26,6 +26,16 @@ public class IndexOperations {
     }
 
     /**
+     * Add a single document to the index.
+     * Convenience method for adding one document at a time.
+     *
+     * @param document document to add
+     */
+    public void add(Document document) throws IOException, InvalidIndexStateException {
+        index.addDocument(document);
+    }
+
+    /**
      * Bulk add documents to the index.
      * More efficient than adding one at a time.
      *
