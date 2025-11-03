@@ -15,11 +15,11 @@ Just as synapses enable rapid communication in the brain, SynapseDB enables rapi
 - [x] Project initialization
 - [x] Maven structure setup
 - [x] Git repository initialized
-- [ ] Basic Lucene integration
-- [ ] Document indexing
-- [ ] Simple search functionality
-- [ ] Field mapping
-- [ ] Index management
+- [X] Basic Lucene integration
+- [X] Document indexing
+- [X] Simple search functionality
+- [X] Field mapping
+- [X] Index management
 
 ## 🏗️ Architecture
 ```
@@ -76,14 +76,14 @@ SearchResponse response = db.getSearchService().search("articles", request);
 
 ## 🗺️ Development Roadmap
 
-### Phase 1: Core Indexing & Search (Weeks 1-3)
+### Phase 1: Core Indexing & Search  (Completed) 
 - [ ] Lucene integration
 - [ ] Document CRUD operations
 - [ ] Basic search functionality
 - [ ] Field type mapping
 - [ ] Index lifecycle management
 
-### Phase 2: Advanced Queries & Aggregations (Weeks 4-6)
+### Phase 2: Advanced Queries & Aggregations (Completed) 
 - [ ] Complex query DSL
 - [ ] Fuzzy search
 - [ ] Boolean queries
@@ -140,9 +140,10 @@ Apache License 2.0
 ## 📞 Contact
 
 For questions or discussions about SynapseDB architecture and implementation.
+amit.tiwari912@gmail.com
 
 ---
 
-**Status**: 🚧 Active Development | **Phase**: 1 of 4 | **Progress**: Foundation
+ 
 
-Built with ❤️ and Java by [Your Name]
+Built with ❤️ and Java by Amit Tiwari
