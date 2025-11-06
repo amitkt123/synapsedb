@@ -35,6 +35,19 @@ public class Document {
         return this;  // Fluent API
     }
 
+    // Set field value (replaces existing value)
+    public Document setField(String name, Object value) {
+        return setField(name, value, FieldConfig.defaults());
+    }
+
+    public Document setField(String name, Object value, FieldConfig config) {
+        List<Object> valueList = new ArrayList<>();
+        valueList.add(value);
+        fields.put(name, valueList);
+        fieldConfigs.put(name, config);
+        return this;  // Fluent API
+    }
+
     // Add multiple values
     public Document addFields(String name, List<Object> values) {
         return addFields(name, values, FieldConfig.defaults());

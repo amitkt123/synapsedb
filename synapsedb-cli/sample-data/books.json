@@ -1,0 +1,123 @@
+[
+  {
+    "title": "Introduction to Java Programming",
+    "author": "John Smith",
+    "category": "Programming",
+    "price": 49.99,
+    "pages": 450,
+    "isbn": "978-0134685991",
+    "published": "2023-01-15",
+    "rating": 4.5,
+    "description": "A comprehensive guide to Java programming covering basics to advanced topics including OOP, collections, streams, and concurrency.",
+    "tags": ["java", "programming", "oop", "beginner"]
+  },
+  {
+    "title": "Advanced Python Techniques",
+    "author": "Jane Doe",
+    "category": "Programming",
+    "price": 59.99,
+    "pages": 520,
+    "isbn": "978-0134686097",
+    "published": "2023-03-20",
+    "rating": 4.7,
+    "description": "Master advanced Python concepts including decorators, metaclasses, async programming, and performance optimization techniques.",
+    "tags": ["python", "programming", "advanced", "performance"]
+  },
+  {
+    "title": "JavaScript: The Complete Guide",
+    "author": "Mike Johnson",
+    "category": "Web Development",
+    "price": 44.99,
+    "pages": 380,
+    "isbn": "978-0134686104",
+    "published": "2023-02-10",
+    "rating": 4.3,
+    "description": "Learn modern JavaScript from basics to advanced topics including ES6+, async/await, promises, and modern frameworks.",
+    "tags": ["javascript", "web", "frontend", "es6"]
+  },
+  {
+    "title": "Data Science with Python",
+    "author": "Sarah Williams",
+    "category": "Data Science",
+    "price": 69.99,
+    "pages": 600,
+    "isbn": "978-0134686111",
+    "published": "2023-04-05",
+    "rating": 4.8,
+    "description": "Complete data science guide using Python, NumPy, Pandas, Matplotlib, and machine learning libraries.",
+    "tags": ["python", "data-science", "machine-learning", "pandas"]
+  },
+  {
+    "title": "Docker and Kubernetes Mastery",
+    "author": "David Brown",
+    "category": "DevOps",
+    "price": 54.99,
+    "pages": 420,
+    "isbn": "978-0134686128",
+    "published": "2023-05-12",
+    "rating": 4.6,
+    "description": "Master containerization and orchestration with Docker and Kubernetes for modern cloud-native applications.",
+    "tags": ["docker", "kubernetes", "devops", "containers"]
+  },
+  {
+    "title": "Machine Learning Fundamentals",
+    "author": "Emily Chen",
+    "category": "Data Science",
+    "price": 74.99,
+    "pages": 650,
+    "isbn": "978-0134686135",
+    "published": "2023-06-08",
+    "rating": 4.9,
+    "description": "Comprehensive introduction to machine learning algorithms, neural networks, and deep learning using Python and TensorFlow.",
+    "tags": ["machine-learning", "ai", "deep-learning", "tensorflow"]
+  },
+  {
+    "title": "React and Redux in Action",
+    "author": "Chris Martinez",
+    "category": "Web Development",
+    "price": 52.99,
+    "pages": 410,
+    "isbn": "978-0134686142",
+    "published": "2023-07-15",
+    "rating": 4.4,
+    "description": "Build modern web applications with React and Redux, covering hooks, context API, and state management patterns.",
+    "tags": ["react", "redux", "javascript", "frontend"]
+  },
+  {
+    "title": "Database Design and SQL",
+    "author": "Robert Taylor",
+    "category": "Database",
+    "price": 47.99,
+    "pages": 390,
+    "isbn": "978-0134686159",
+    "published": "2023-08-20",
+    "rating": 4.2,
+    "description": "Learn database design principles, normalization, SQL queries, and optimization techniques for relational databases.",
+    "tags": ["sql", "database", "design", "postgresql"]
+  },
+  {
+    "title": "Cloud Computing with AWS",
+    "author": "Lisa Anderson",
+    "category": "Cloud",
+    "price": 64.99,
+    "pages": 540,
+    "isbn": "978-0134686166",
+    "published": "2023-09-10",
+    "rating": 4.7,
+    "description": "Complete guide to Amazon Web Services covering EC2, S3, Lambda, RDS, and best practices for cloud architecture.",
+    "tags": ["aws", "cloud", "devops", "serverless"]
+  },
+  {
+    "title": "Microservices Architecture",
+    "author": "James Wilson",
+    "category": "Architecture",
+    "price": 58.99,
+    "pages": 480,
+    "isbn": "978-0134686173",
+    "published": "2023-10-05",
+    "rating": 4.5,
+    "description": "Design and build scalable microservices architectures with best practices, patterns, and anti-patterns.",
+    "tags": ["microservices", "architecture", "design-patterns", "distributed-systems"]
+  }
+]
+
