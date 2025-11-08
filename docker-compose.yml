@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  synapsedb:
+    build: .
+    image: synapsedb:0.1.0
+    container_name: synapsedb-cli
+    stdin_open: true
+    tty: true
+    volumes:
+      # Mount host directory for data persistence
+      - ./data:/data
+      # Mount custom JSON files
+      - ./custom-data:/custom-data:ro
+    environment:
+      - JAVA_OPTS=-Xmx2g -XX:+UseG1GC
+    # Uncomment for future REST API support
+    # ports:
+    #   - "9200:9200"
+    networks:
+      - synapsedb-network
+
+networks:
+  synapsedb-network:
+    driver: bridge
+

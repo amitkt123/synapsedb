@@ -1,0 +1,43 @@
+[
+  {
+    "name": "Laptop",
+    "brand": "Dell",
+    "price": 999.99,
+    "category": "Electronics",
+    "stock": 15,
+    "description": "High-performance laptop for professionals"
+  },
+  {
+    "name": "Wireless Mouse",
+    "brand": "Logitech",
+    "price": 29.99,
+    "category": "Electronics",
+    "stock": 50,
+    "description": "Ergonomic wireless mouse with precision tracking"
+  },
+  {
+    "name": "Mechanical Keyboard",
+    "brand": "Corsair",
+    "price": 79.99,
+    "category": "Electronics",
+    "stock": 25,
+    "description": "RGB mechanical keyboard with Cherry MX switches"
+  },
+  {
+    "name": "USB-C Hub",
+    "brand": "Anker",
+    "price": 49.99,
+    "category": "Accessories",
+    "stock": 40,
+    "description": "7-in-1 USB-C hub with HDMI and card reader"
+  },
+  {
+    "name": "Webcam",
+    "brand": "Logitech",
+    "price": 89.99,
+    "category": "Electronics",
+    "stock": 20,
+    "description": "1080p HD webcam with auto-focus"
+  }
+]
+

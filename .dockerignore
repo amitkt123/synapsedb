@@ -1,0 +1,44 @@
+# Maven
+target/
+!synapsedb-cli/target/synapsedb-cli-*-jar-with-dependencies.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Build
+*.class
+*.log
+*.jar
+!synapsedb-cli/target/synapsedb-cli-*-jar-with-dependencies.jar
+
+# Documentation (optional)
+docs/
+*.md
+!README.md
+
+# Test files
+**/test/**
+**/*Test.java
+
+# OS
+.DS_Store
+Thumbs.db
+

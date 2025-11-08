@@ -147,8 +147,17 @@ public class SynapseDBCLI implements Runnable {
             case "find":
                 findDocuments(args);
                 break;
+            case "findbyid":
+                findById(args);
+                break;
             case "search":
                 searchDocuments(args);
+                break;
+            case "search-multi":
+                searchMultiField(args);
+                break;
+            case "phrase":
+                phraseSearch(args);
                 break;
             case "aggregate":
                 aggregateDocuments(args);
@@ -167,6 +176,9 @@ public class SynapseDBCLI implements Runnable {
                 break;
             case "load":
                 loadDataFromFile(args);
+                break;
+            case "export":
+                exportToFile(args);
                 break;
             case "stats":
                 showStats();
@@ -192,32 +204,43 @@ public class SynapseDBCLI implements Runnable {
 
         System.out.println("\nDocument Operations:");
         System.out.println("  insert <json>            - Insert a document");
-        System.out.println("  find [field=value]       - Find documents");
+        System.out.println("  find [field=value]       - Find documents (or all if no query)");
+        System.out.println("  findById <id>            - Find document by ID");
         System.out.println("  update <id> <json>       - Update a document");
         System.out.println("  delete <id>              - Delete a document");
         System.out.println("  count                    - Count documents in collection");
 
         System.out.println("\nSearch Operations:");
         System.out.println("  index <field1> <field2>  - Enable full-text search on fields");
-        System.out.println("  search <field> <query>   - Full-text search");
+        System.out.println("  search <field> <query>   - Full-text search in single field");
+        System.out.println("  search-multi <fields> <query> - Search in multiple fields (comma-separated)");
+        System.out.println("  phrase <field> <phrase>  - Exact phrase search");
 
         System.out.println("\nAggregation:");
-        System.out.println("  aggregate <pipeline>     - Run aggregation pipeline");
+        System.out.println("  aggregate group by <field>           - Group by field and count");
+        System.out.println("  aggregate avg <field> by <groupField> - Average aggregation");
+        System.out.println("  aggregate sum <field> by <groupField> - Sum aggregation");
 
-        System.out.println("\nData Loading:");
+        System.out.println("\nData Import/Export:");
         System.out.println("  load <file.json>         - Load documents from JSON file");
+        System.out.println("  export <file.json>       - Export all documents to JSON file");
 
         System.out.println("\nUtility:");
         System.out.println("  clear                    - Clear screen");
         System.out.println("  help                     - Show this help message");
-        System.out.println("  exit                     - Exit the CLI");
+        System.out.println("  exit / quit              - Exit the CLI");
 
         System.out.println("\n=== Examples ===\n");
-        System.out.println("  use products");
-        System.out.println("  insert {\"name\":\"Laptop\",\"price\":1000,\"category\":\"Electronics\"}");
-        System.out.println("  find category=Electronics");
-        System.out.println("  index name description");
-        System.out.println("  search name laptop");
+        System.out.println("  use books");
+        System.out.println("  load sample-data/books.json");
+        System.out.println("  index title author description");
+        System.out.println("  search description \"machine learning\"");
+        System.out.println("  search-multi title,description python");
+        System.out.println("  phrase description \"comprehensive guide\"");
+        System.out.println("  aggregate group by category");
+        System.out.println("  aggregate avg price by category");
+        System.out.println("  find category=Programming");
+        System.out.println("  export output/my-books.json");
         System.out.println();
     }
 
@@ -319,6 +342,27 @@ public class SynapseDBCLI implements Runnable {
         displayDocuments(results);
     }
 
+    private void findById(String id) {
+        if (currentCollection == null) {
+            System.out.println("Error: No collection selected. Use 'use <collection>' first.");
+            return;
+        }
+
+        if (id.isEmpty()) {
+            System.out.println("Usage: findById <id>");
+            return;
+        }
+
+        Collection collection = database.collection(currentCollection);
+        Document doc = collection.findById(id);
+
+        if (doc == null) {
+            System.out.println("Document not found with ID: " + id);
+        } else {
+            displayDocuments(Arrays.asList(doc));
+        }
+    }
+
     private void searchDocuments(String args) {
         if (currentCollection == null) {
             System.out.println("Error: No collection selected. Use 'use <collection>' first.");
@@ -335,19 +379,96 @@ public class SynapseDBCLI implements Runnable {
         String query = parts[1];
 
         Collection collection = database.collection(currentCollection);
+        long startTime = System.currentTimeMillis();
         FullTextIndex.SearchResult result = collection.search(field, query, 20);
+        long duration = System.currentTimeMillis() - startTime;
 
-        System.out.println("\nFound " + result.getTotalMatches() + " results:\n");
+        System.out.println("\nFound " + result.getTotalMatches() + " results in " + duration + "ms:\n");
 
         if (result.getResults().isEmpty()) {
             System.out.println("No documents found.");
         } else {
-            for (FullTextIndex.ScoredDocument scored : result.getResults()) {
-                Document doc = scored.getDocument();
-                System.out.println(String.format("Score: %.4f | ID: %s", scored.getScore(), doc.getId()));
-                System.out.println("  " + formatDocumentOneLine(doc));
-                System.out.println();
+            displaySearchResults(result);
+        }
+    }
+
+    private void searchMultiField(String args) {
+        if (currentCollection == null) {
+            System.out.println("Error: No collection selected. Use 'use <collection>' first.");
+            return;
+        }
+
+        String[] parts = args.split("\\s+", 2);
+        if (parts.length < 2) {
+            System.out.println("Usage: search-multi <field1,field2,...> <query>");
+            return;
+        }
+
+        String[] fields = parts[0].split(",");
+        String query = parts[1];
+
+        Collection collection = database.collection(currentCollection);
+        long startTime = System.currentTimeMillis();
+        FullTextIndex.SearchResult result = collection.searchMultiple(Arrays.asList(fields), query, 20);
+        long duration = System.currentTimeMillis() - startTime;
+
+        System.out.println("\nSearching in fields: " + String.join(", ", fields));
+        System.out.println("Found " + result.getTotalMatches() + " results in " + duration + "ms:\n");
+
+        if (result.getResults().isEmpty()) {
+            System.out.println("No documents found.");
+        } else {
+            displaySearchResults(result);
+        }
+    }
+
+    private void phraseSearch(String args) {
+        if (currentCollection == null) {
+            System.out.println("Error: No collection selected. Use 'use <collection>' first.");
+            return;
+        }
+
+        String[] parts = args.split("\\s+", 2);
+        if (parts.length < 2) {
+            System.out.println("Usage: phrase <field> <\"exact phrase\">");
+            return;
+        }
+
+        String field = parts[0];
+        String phrase = parts[1].replaceAll("^\"|\"$", ""); // Remove quotes if present
+
+        Collection collection = database.collection(currentCollection);
+        long startTime = System.currentTimeMillis();
+        FullTextIndex.SearchResult result = collection.phraseSearch(field, phrase, 20);
+        long duration = System.currentTimeMillis() - startTime;
+
+        System.out.println("\nPhrase search for: \"" + phrase + "\" in field: " + field);
+        System.out.println("Found " + result.getTotalMatches() + " results in " + duration + "ms:\n");
+
+        if (result.getResults().isEmpty()) {
+            System.out.println("No documents found.");
+        } else {
+            displaySearchResults(result);
+        }
+    }
+
+    private void displaySearchResults(FullTextIndex.SearchResult result) {
+        for (FullTextIndex.ScoredDocument scored : result.getResults()) {
+            Document doc = scored.getDocument();
+            System.out.println(String.format("Score: %.4f | ID: %s", scored.getScore(), doc.getId()));
+
+            // Display key fields
+            for (String fieldName : doc.getFieldNames()) {
+                Object value = doc.getField(fieldName);
+                if (value != null) {
+                    String valueStr = value.toString();
+                    if (valueStr.length() > 100) {
+                        valueStr = valueStr.substring(0, 97) + "...";
+                    }
+                    System.out.println("  " + fieldName + ": " + valueStr);
+                }
             }
+            System.out.println();
         }
     }
 
@@ -357,21 +478,72 @@ public class SynapseDBCLI implements Runnable {
             return;
         }
 
-        // For now, support simple aggregation: group by <field>
-        if (pipelineSpec.startsWith("group by ")) {
-            String field = pipelineSpec.substring(9).trim();
+        Collection collection = database.collection(currentCollection);
+        AggregationPipeline pipeline = new AggregationPipeline();
 
-            AggregationPipeline pipeline = new AggregationPipeline()
-                .addStage(AggregationPipeline.group(field).count("count"));
+        try {
+            // Parse aggregation commands
+            if (pipelineSpec.startsWith("group by ")) {
+                // Simple group by: aggregate group by category
+                String field = pipelineSpec.substring(9).trim();
+                pipeline.addStage(AggregationPipeline.group(field).count("count"));
 
-            Collection collection = database.collection(currentCollection);
+            } else if (pipelineSpec.matches("avg .+ by .+")) {
+                // Average: aggregate avg price by category
+                String[] parts = pipelineSpec.split(" by ");
+                String avgField = parts[0].substring(4).trim();
+                String groupField = parts[1].trim();
+                pipeline.addStage(AggregationPipeline.group(groupField)
+                    .avg("average_" + avgField, avgField)
+                    .count("count"));
+
+            } else if (pipelineSpec.matches("sum .+ by .+")) {
+                // Sum: aggregate sum price by category
+                String[] parts = pipelineSpec.split(" by ");
+                String sumField = parts[0].substring(4).trim();
+                String groupField = parts[1].trim();
+                pipeline.addStage(AggregationPipeline.group(groupField)
+                    .sum("total_" + sumField, sumField)
+                    .count("count"));
+
+            } else if (pipelineSpec.matches("min .+ by .+")) {
+                // Min: aggregate min price by category
+                String[] parts = pipelineSpec.split(" by ");
+                String minField = parts[0].substring(4).trim();
+                String groupField = parts[1].trim();
+                pipeline.addStage(AggregationPipeline.group(groupField)
+                    .min("min_" + minField, minField)
+                    .count("count"));
+
+            } else if (pipelineSpec.matches("max .+ by .+")) {
+                // Max: aggregate max price by category
+                String[] parts = pipelineSpec.split(" by ");
+                String maxField = parts[0].substring(4).trim();
+                String groupField = parts[1].trim();
+                pipeline.addStage(AggregationPipeline.group(groupField)
+                    .max("max_" + maxField, maxField)
+                    .count("count"));
+
+            } else {
+                System.out.println("Usage:");
+                System.out.println("  aggregate group by <field>");
+                System.out.println("  aggregate avg <field> by <groupField>");
+                System.out.println("  aggregate sum <field> by <groupField>");
+                System.out.println("  aggregate min <field> by <groupField>");
+                System.out.println("  aggregate max <field> by <groupField>");
+                return;
+            }
+
+            long startTime = System.currentTimeMillis();
             AggregationPipeline.AggregationResult result = collection.aggregate(pipeline);
+            long duration = System.currentTimeMillis() - startTime;
 
-            System.out.println("\nAggregation Results:\n");
+            System.out.println("\nAggregation completed in " + duration + "ms\n");
             displayDocuments(result.getDocuments());
-        } else {
-            System.out.println("Usage: aggregate group by <field>");
-            System.out.println("Example: aggregate group by category");
+
+        } catch (Exception e) {
+            System.out.println("Error executing aggregation: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -471,6 +643,7 @@ public class SynapseDBCLI implements Runnable {
                 Collection collection = database.collection(currentCollection);
                 int count = 0;
 
+                System.out.print("Loading documents");
                 for (var element : array) {
                     JsonObject jsonObject = element.getAsJsonObject();
                     Document doc = new Document();
@@ -481,9 +654,12 @@ public class SynapseDBCLI implements Runnable {
 
                     collection.insert(doc);
                     count++;
+                    if (count % 10 == 0) {
+                        System.out.print(".");
+                    }
                 }
 
-                System.out.println("✓ Loaded " + count + " documents from " + filename);
+                System.out.println("\n✓ Loaded " + count + " documents from " + filename);
             } else {
                 // Single JSON object
                 insertDocument(content);
@@ -492,6 +668,58 @@ public class SynapseDBCLI implements Runnable {
             System.out.println("Error: Could not read file - " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Error: Invalid JSON in file - " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void exportToFile(String filename) {
+        if (currentCollection == null) {
+            System.out.println("Error: No collection selected. Use 'use <collection>' first.");
+            return;
+        }
+
+        if (filename.isEmpty()) {
+            System.out.println("Usage: export <filename.json>");
+            return;
+        }
+
+        try {
+            Collection collection = database.collection(currentCollection);
+            List<Document> documents = collection.findAll();
+
+            if (documents.isEmpty()) {
+                System.out.println("No documents to export.");
+                return;
+            }
+
+            // Convert documents to JSON
+            com.google.gson.JsonArray jsonArray = new com.google.gson.JsonArray();
+            for (Document doc : documents) {
+                JsonObject jsonObject = new JsonObject();
+                for (String fieldName : doc.getFieldNames()) {
+                    Object value = doc.getField(fieldName);
+                    if (value instanceof Number) {
+                        jsonObject.addProperty(fieldName, (Number) value);
+                    } else if (value instanceof Boolean) {
+                        jsonObject.addProperty(fieldName, (Boolean) value);
+                    } else {
+                        jsonObject.addProperty(fieldName, value.toString());
+                    }
+                }
+                jsonArray.add(jsonObject);
+            }
+
+            // Write to file
+            String json = gson.toJson(jsonArray);
+            Files.writeString(Paths.get(filename), json);
+
+            System.out.println("✓ Exported " + documents.size() + " documents to " + filename);
+
+        } catch (IOException e) {
+            System.out.println("Error: Could not write to file - " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error: Export failed - " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -594,8 +822,9 @@ public class SynapseDBCLI implements Runnable {
     private static class CommandCompleter implements Completer {
         private static final List<String> COMMANDS = Arrays.asList(
             "help", "exit", "quit", "use", "show", "create", "drop",
-            "insert", "find", "search", "aggregate", "update", "delete",
-            "count", "index", "load", "stats", "clear"
+            "insert", "find", "findById", "search", "search-multi", "phrase",
+            "aggregate", "update", "delete", "count", "index", "load", "export",
+            "stats", "clear"
         );
 
         @Override
