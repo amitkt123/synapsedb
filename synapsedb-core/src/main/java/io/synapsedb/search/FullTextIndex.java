@@ -1,5 +1,7 @@
 package io.synapsedb.search;
 
+import io.synapsedb.analysis.Analyzer;
+import io.synapsedb.analysis.analyser.StandardAnalyzer;
 import io.synapsedb.document.Document;
 
 import java.util.*;
@@ -18,12 +20,32 @@ public class FullTextIndex {
     private final Map<String, Document> documents;
     private final Pattern tokenPattern;
     private final Set<String> stopWords;
+    private Analyzer analyzer;
 
     public FullTextIndex() {
+        this(new StandardAnalyzer());
+    }
+
+    public FullTextIndex(Analyzer analyzer) {
         this.fieldIndexes = new ConcurrentHashMap<>();
         this.documents = new ConcurrentHashMap<>();
         this.tokenPattern = Pattern.compile("\\W+");
         this.stopWords = initializeStopWords();
+        this.analyzer = analyzer;
+    }
+
+    /**
+     * Set the analyzer for text processing
+     */
+    public void setAnalyzer(Analyzer analyzer) {
+        this.analyzer = analyzer;
+    }
+
+    /**
+     * Get current analyzer
+     */
+    public Analyzer getAnalyzer() {
+        return analyzer;
     }
 
     /**
@@ -203,10 +225,9 @@ public class FullTextIndex {
     }
 
     private Set<String> tokenize(String text) {
-        return Arrays.stream(tokenPattern.split(text.toLowerCase()))
-                .filter(token -> !token.isEmpty())
-                .filter(token -> !stopWords.contains(token))
-                .collect(Collectors.toSet());
+        // Use analyzer for advanced text processing
+        List<String> tokens = analyzer.analyze(text);
+        return new HashSet<>(tokens);
     }
 
     private Set<String> initializeStopWords() {

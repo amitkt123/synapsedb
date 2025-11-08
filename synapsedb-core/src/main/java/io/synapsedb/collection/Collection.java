@@ -1,6 +1,8 @@
 package io.synapsedb.collection;
 
 import io.synapsedb.aggregation.AggregationPipeline;
+import io.synapsedb.analysis.Analyzer;
+import io.synapsedb.analysis.analyser.StandardAnalyzer;
 import io.synapsedb.document.Document;
 import io.synapsedb.search.FullTextIndex;
 
@@ -19,10 +21,41 @@ public class Collection {
     private final Set<String> searchableFields;
 
     public Collection(String name) {
+        this(name, new StandardAnalyzer());
+    }
+
+    public Collection(String name, Analyzer analyzer) {
         this.name = name;
         this.documents = new ConcurrentHashMap<>();
-        this.fullTextIndex = new FullTextIndex();
+        this.fullTextIndex = new FullTextIndex(analyzer);
         this.searchableFields = new HashSet<>();
+    }
+
+    /**
+     * Set the analyzer for text analysis
+     */
+    public void setAnalyzer(Analyzer analyzer) {
+        fullTextIndex.setAnalyzer(analyzer);
+        // Re-index all documents with new analyzer
+        if (!searchableFields.isEmpty()) {
+            reindexAllDocuments();
+        }
+    }
+
+    /**
+     * Get current analyzer
+     */
+    public Analyzer getAnalyzer() {
+        return fullTextIndex.getAnalyzer();
+    }
+
+    /**
+     * Re-index all documents (called when analyzer changes)
+     */
+    private void reindexAllDocuments() {
+        for (Document doc : documents.values()) {
+            fullTextIndex.indexDocument(doc, new ArrayList<>(searchableFields));
+        }
     }
 
     /**

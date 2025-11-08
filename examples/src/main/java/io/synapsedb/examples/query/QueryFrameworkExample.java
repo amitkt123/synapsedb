@@ -26,7 +26,7 @@ public class QueryFrameworkExample {
 
     public static void main(String[] args) {
         System.out.println("=".repeat(80));
-        System.out.println("🚀 SynapseDB Query Framework Demo");
+        System.out.println("SynapseDB Query Framework Demo");
         System.out.println("=".repeat(80));
         System.out.println();
 

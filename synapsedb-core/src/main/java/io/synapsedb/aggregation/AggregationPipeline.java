@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 /**
  * Aggregation framework for analytical queries
- *
+ *greate
  * @author Amit Tiwari
  */
 public class AggregationPipeline {

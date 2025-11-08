@@ -80,18 +80,20 @@ package.json
 QUICK_SHARE_GUIDE.md
 test-fulltext-search.sh
 build-distribution.sh
+ANALYSIS_INTEGRATION.md
+CLI_DEMO_GUIDE.md
+INTEGRATION_SUCCESS.md
+synapsedb-parent.iml
 
 
 #SynapseDB-CLI
 synapsedb-cli/JSON-IMPORT-GUIDE.md
 synapsedb-cli/QUICKSTART.md
-synapsedb-cli/README.md
+
 
 #Node Modules
 node_modules
 
 
-
-
-
-
+/TEXT_ANALYSIS_GUIDE.md
+load-books-quick.sh

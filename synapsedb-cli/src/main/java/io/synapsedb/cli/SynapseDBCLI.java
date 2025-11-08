@@ -8,6 +8,10 @@ import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestLine;
 import io.synapsedb.SynapseDB;
 import io.synapsedb.aggregation.AggregationPipeline;
+import io.synapsedb.analysis.Analyzer;
+import io.synapsedb.analysis.analyser.LemmatizationAnalyzer;
+import io.synapsedb.analysis.analyser.StandardAnalyzer;
+import io.synapsedb.analysis.analyser.StemmingAnalyzer;
 import io.synapsedb.collection.Collection;
 import io.synapsedb.document.Document;
 import io.synapsedb.search.FullTextIndex;
@@ -82,8 +86,8 @@ public class SynapseDBCLI implements Runnable {
     private void printWelcomeBanner() {
         System.out.println("\n" +
                 "╔═══════════════════════════════════════════════════════════╗\n" +
-                "║              SynapseDB Interactive CLI                   ║\n" +
-                "║                    Version 0.1.0                         ║\n" +
+                "║              SynapseDB Interactive CLI                    ║\n" +
+                "║                    Version 0.1.0                          ║\n" +
                 "╚═══════════════════════════════════════════════════════════╝\n");
         System.out.println("Type 'help' for available commands or 'exit' to quit.\n");
     }
@@ -174,6 +178,9 @@ public class SynapseDBCLI implements Runnable {
             case "index":
                 enableFullTextSearch(args);
                 break;
+            case "analyzer":
+                setAnalyzer(args);
+                break;
             case "load":
                 loadDataFromFile(args);
                 break;
@@ -212,6 +219,7 @@ public class SynapseDBCLI implements Runnable {
 
         System.out.println("\nSearch Operations:");
         System.out.println("  index <field1> <field2>  - Enable full-text search on fields");
+        System.out.println("  analyzer <type>          - Set text analyzer: standard, stemming, lemmatization");
         System.out.println("  search <field> <query>   - Full-text search in single field");
         System.out.println("  search-multi <fields> <query> - Search in multiple fields (comma-separated)");
         System.out.println("  phrase <field> <phrase>  - Exact phrase search");
@@ -233,6 +241,7 @@ public class SynapseDBCLI implements Runnable {
         System.out.println("\n=== Examples ===\n");
         System.out.println("  use books");
         System.out.println("  load sample-data/books.json");
+        System.out.println("  analyzer stemming");
         System.out.println("  index title author description");
         System.out.println("  search description \"machine learning\"");
         System.out.println("  search-multi title,description python");
@@ -628,6 +637,51 @@ public class SynapseDBCLI implements Runnable {
         System.out.println("✓ Full-text search enabled on fields: " + String.join(", ", fieldArray));
     }
 
+    private void setAnalyzer(String analyzerType) {
+        if (currentCollection == null) {
+            System.out.println("Error: No collection selected. Use 'use <collection>' first.");
+            return;
+        }
+
+        if (analyzerType.isEmpty()) {
+            // Show current analyzer
+            Collection collection = database.collection(currentCollection);
+            Analyzer current = collection.getAnalyzer();
+            System.out.println("Current analyzer: " + current.getName());
+            System.out.println("\nAvailable analyzers:");
+            System.out.println("  standard       - Basic tokenization + lowercase");
+            System.out.println("  stemming       - Porter stemming (removes suffixes)");
+            System.out.println("  lemmatization  - Dictionary-based word reduction");
+            System.out.println("\nUsage: analyzer <type>");
+            return;
+        }
+
+        Collection collection = database.collection(currentCollection);
+        Analyzer analyzer;
+
+        switch (analyzerType.toLowerCase()) {
+            case "standard":
+                analyzer = new StandardAnalyzer();
+                break;
+            case "stemming":
+            case "stem":
+                analyzer = new StemmingAnalyzer();
+                break;
+            case "lemmatization":
+            case "lemma":
+                analyzer = new LemmatizationAnalyzer();
+                break;
+            default:
+                System.out.println("Unknown analyzer: " + analyzerType);
+                System.out.println("Available: standard, stemming, lemmatization");
+                return;
+        }
+
+        collection.setAnalyzer(analyzer);
+        System.out.println("✓ Analyzer set to: " + analyzer.getName());
+        System.out.println("  (Documents will be re-indexed automatically)");
+    }
+
     private void loadDataFromFile(String filename) {
         if (currentCollection == null) {
             System.out.println("Error: No collection selected. Use 'use <collection>' first.");
@@ -823,7 +877,7 @@ public class SynapseDBCLI implements Runnable {
         private static final List<String> COMMANDS = Arrays.asList(
             "help", "exit", "quit", "use", "show", "create", "drop",
             "insert", "find", "findById", "search", "search-multi", "phrase",
-            "aggregate", "update", "delete", "count", "index", "load", "export",
+            "aggregate", "update", "delete", "count", "index", "analyzer", "load", "export",
             "stats", "clear"
         );
 
