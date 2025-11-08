@@ -68,32 +68,47 @@ test-output/
 # Temporary files
 *.tmp
 *.temp
+
+# Documentation files (keep tracked)
+# README.md - Main project readme (tracked)
+# FEATURE_OUTLINE.md - Complete feature list (tracked)
+# CLI_DEMO_GUIDE.md - Demo guide (tracked)
+# docs/ - Architecture docs (tracked)
+
+# Temporary demo/guide files (excluded)
 OPERATIONS_COMPLETE.md
 DISTRIBUTION_GUIDE.md
 FULL_TEXT_SEARCH_AND_AGGREGATION.md
 HOW_TO_TEST_FULL_TEXT_SEARCH.md
 IMPLEMENTATION_COMPLETE.md
+QUICK_SHARE_GUIDE.md
+ANALYSIS_INTEGRATION.md
+INTEGRATION_SUCCESS.md
+TEXT_ANALYSIS_GUIDE.md
+
+# Build scripts (keep tracked)
+# build-distribution.sh (tracked)
+# synapsedb-cli/run.sh (tracked)
+
+# Temporary test scripts (excluded)
 load-books.sh
 load-docker.sh
+test-fulltext-search.sh
+load-books-quick.sh
+
+# Package files
 package-lock.json
 package.json
-QUICK_SHARE_GUIDE.md
-test-fulltext-search.sh
-build-distribution.sh
-ANALYSIS_INTEGRATION.md
-CLI_DEMO_GUIDE.md
-INTEGRATION_SUCCESS.md
+
+# IntelliJ files
 synapsedb-parent.iml
 
-
-#SynapseDB-CLI
+# SynapseDB-CLI docs (keep main ones tracked)
+# synapsedb-cli/README.md (tracked)
+# synapsedb-cli/USAGE.md (tracked)
 synapsedb-cli/JSON-IMPORT-GUIDE.md
 synapsedb-cli/QUICKSTART.md
 
-
-#Node Modules
+# Node Modules
 node_modules
 
-
-/TEXT_ANALYSIS_GUIDE.md
-load-books-quick.sh
