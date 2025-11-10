@@ -11,12 +11,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Amit Tiwari
  */
 public class SynapseDB {
-    private final String name;
+    private String name;
     private final Map<String, Collection> collections;
     private volatile boolean closed = false;
 
     public SynapseDB(String name) {
         this.name = name;
+        this.collections = new ConcurrentHashMap<>();
+    }
+    public SynapseDB(){
         this.collections = new ConcurrentHashMap<>();
     }
 
@@ -83,6 +86,9 @@ public class SynapseDB {
         return name;
     }
 
+    public String setName(String name) {
+        return this.name;
+    }
     /**
      * Database statistics
      */
