@@ -76,25 +76,25 @@ test-output/
 # docs/ - Architecture docs (tracked)
 
 # Temporary demo/guide files (excluded)
-OPERATIONS_COMPLETE.md
-DISTRIBUTION_GUIDE.md
-FULL_TEXT_SEARCH_AND_AGGREGATION.md
-HOW_TO_TEST_FULL_TEXT_SEARCH.md
-IMPLEMENTATION_COMPLETE.md
+docs/OPERATIONS_COMPLETE.md
+docs/DISTRIBUTION_GUIDE.md
+docs/FULL_TEXT_SEARCH_AND_AGGREGATION.md
+docs/HOW_TO_TEST_FULL_TEXT_SEARCH.md
+docs/IMPLEMENTATION_COMPLETE.md
 QUICK_SHARE_GUIDE.md
-ANALYSIS_INTEGRATION.md
-INTEGRATION_SUCCESS.md
-TEXT_ANALYSIS_GUIDE.md
+docs/ANALYSIS_INTEGRATION.md
+docs/INTEGRATION_SUCCESS.md
+docs/TEXT_ANALYSIS_GUIDE.md
 
 # Build scripts (keep tracked)
 # build-distribution.sh (tracked)
 # synapsedb-cli/run.sh (tracked)
 
 # Temporary test scripts (excluded)
-load-books.sh
-load-docker.sh
-test-fulltext-search.sh
-load-books-quick.sh
+docs/load-books.sh
+docs/load-docker.sh
+docs/test-fulltext-search.sh
+docs/load-books-quick.sh
 
 # Package files
 package-lock.json

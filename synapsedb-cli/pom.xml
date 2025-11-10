@@ -63,7 +63,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>io.synapsedb.cli.SynapseDBCLI</mainClass>
+                            <mainClass>io.synapsedb.core.cli.SynapseDBCLI</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -89,7 +89,7 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>io.synapsedb.cli.SynapseDBCLI</mainClass>
+                            <mainClass>io.synapsedb.core.cli.SynapseDBCLI</mainClass>
                             <id>synapsedb</id>
                         </program>
                     </programs>

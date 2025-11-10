@@ -255,8 +255,8 @@ synapsedb> search text run
 
 ## 📚 Documentation
 
-- [Feature Outline](FEATURE_OUTLINE.md) - Complete feature list
-- [CLI Demo Guide](CLI_DEMO_GUIDE.md) - Step-by-step demo script
+- [Feature Outline](docs/FEATURE_OUTLINE.md) - Complete feature list
+- [CLI Demo Guide](docs/CLI_DEMO_GUIDE.md) - Step-by-step demo script
 - [Architecture Overview](docs/architecture.md) - System design
 - [CLI Usage](synapsedb-cli/USAGE.md) - CLI command reference
 
@@ -353,11 +353,43 @@ This is an ongoing project built to become a AI native search and analytics engi
 - Additional aggregation operations
 - Documentation improvements
 
-## 📄 License
+## 📄 License & Copyright
 
-Apache License 2.0
+**Copyright © 2025 Amit Tiwari. All rights reserved.**
 
-See [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for full details.
+
+### What This Means:
+
+✅ **You CAN:**
+- Use SynapseDB freely for any purpose (personal, commercial, educational)
+- Modify and distribute the code
+- Use it in proprietary software
+- Patent grant included
+
+⚠️ **You MUST:**
+- Include a copy of the license in any distribution
+- State significant changes made to the code
+- Retain copyright and attribution notices
+- Include the NOTICE file
+
+❌ **You CANNOT:**
+- Hold the author liable for damages
+- Use the SynapseDB trademark without permission
+- Remove or alter copyright notices
+- Claim you created the original work
+
+### Trademark Notice
+"SynapseDB" is a trademark of Amit Tiwari.
+
+### Attribution
+When using SynapseDB, please provide attribution:
+```
+This project uses SynapseDB (https://github.com/amitkt123/synapsedb)
+Copyright 2025 Amit Tiwari
+```
+
+See [LICENSE](LICENSE) and [NOTICE](NOTICE) files for complete details.
 
 ## 🙏 Acknowledgments
 
