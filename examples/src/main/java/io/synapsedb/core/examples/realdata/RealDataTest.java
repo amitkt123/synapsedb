@@ -2,6 +2,7 @@ package io.synapsedb.core.examples.realdata;
 
 import io.synapsedb.core.document.Document;
 import io.synapsedb.core.document.FieldConfig;
+import io.synapsedb.core.document.FieldType;
 import io.synapsedb.core.index.Index;
 import io.synapsedb.core.index.IndexManager;
 import io.synapsedb.core.index.IndexSettings;
@@ -87,14 +88,14 @@ public class RealDataTest {
             String description = generateProductDescription(productName);
 
             Document product = new Document("PROD-" + String.format("%05d", i));
-            product.addField("name", productName, FieldConfig.text().setStored(true));
-            product.addField("description", description, FieldConfig.text().setStored(true));
-            product.addField("category", category, FieldConfig.keyword().setStored(true));
-            product.addField("brand", brand, FieldConfig.keyword().setStored(true));
-            product.addField("price", String.valueOf(price), FieldConfig.text().setStored(true));
-            product.addField("stock", String.valueOf(stock), FieldConfig.text().setStored(true));
-            product.addField("rating", String.valueOf(rating), FieldConfig.text().setStored(true));
-            product.addField("available", stock > 0 ? "true" : "false", FieldConfig.keyword().setStored(true));
+            product.addField("name", productName, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            product.addField("description", description, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            product.addField("category", category, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            product.addField("brand", brand, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            product.addField("price", String.valueOf(price), FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            product.addField("stock", String.valueOf(stock), FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            product.addField("rating", String.valueOf(rating), FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            product.addField("available", stock > 0 ? "true" : "false", FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
 
             products.add(product);
         }
@@ -160,14 +161,14 @@ public class RealDataTest {
             boolean active = random.nextBoolean();
 
             Document user = new Document("USER-" + String.format("%05d", i));
-            user.addField("firstName", firstName, FieldConfig.text().setStored(true));
-            user.addField("lastName", lastName, FieldConfig.text().setStored(true));
-            user.addField("email", email, FieldConfig.keyword().setStored(true));
-            user.addField("city", city, FieldConfig.keyword().setStored(true));
-            user.addField("role", role, FieldConfig.keyword().setStored(true));
-            user.addField("age", String.valueOf(age), FieldConfig.text().setStored(true));
-            user.addField("active", String.valueOf(active), FieldConfig.keyword().setStored(true));
-            user.addField("fullName", firstName + " " + lastName, FieldConfig.text().setStored(true));
+            user.addField("firstName", firstName, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            user.addField("lastName", lastName, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            user.addField("email", email, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            user.addField("city", city, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            user.addField("role", role, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            user.addField("age", String.valueOf(age), FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            user.addField("active", String.valueOf(active), FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            user.addField("fullName", firstName + " " + lastName, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
 
             users.add(user);
         }
@@ -274,13 +275,13 @@ public class RealDataTest {
             String publishDate = "2024-" + String.format("%02d", 1 + random.nextInt(12)) + "-" + String.format("%02d", 1 + random.nextInt(28));
 
             Document post = new Document("POST-" + String.format("%05d", i + 1));
-            post.addField("title", title, FieldConfig.text().setStored(true));
-            post.addField("content", content, FieldConfig.text().setStored(true));
-            post.addField("author", author, FieldConfig.keyword().setStored(true));
-            post.addField("tags", tagsStr, FieldConfig.text().setStored(true));
-            post.addField("views", String.valueOf(views), FieldConfig.text().setStored(true));
-            post.addField("likes", String.valueOf(likes), FieldConfig.text().setStored(true));
-            post.addField("publishDate", publishDate, FieldConfig.keyword().setStored(true));
+            post.addField("title", title, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            post.addField("content", content, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            post.addField("author", author, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            post.addField("tags", tagsStr, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            post.addField("views", String.valueOf(views), FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            post.addField("likes", String.valueOf(likes), FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            post.addField("publishDate", publishDate, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
 
             posts.add(post);
         }

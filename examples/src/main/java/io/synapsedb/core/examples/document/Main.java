@@ -1,6 +1,7 @@
 package io.synapsedb.core.examples.document;
 
 import io.synapsedb.core.document.FieldConfig;
+import io.synapsedb.core.document.FieldType;
 import io.synapsedb.core.document.mapper.DocumentConverter;
 import org.apache.lucene.document.*;
 import org.apache.lucene.document.Document;
@@ -30,15 +31,15 @@ public class Main {
 
         // Create SynapseDoc
         io.synapsedb.core.document.Document synapseDoc = new io.synapsedb.core.document.Document("user-123")
-                .addField("name", "John Doe", FieldConfig.text())
-                .addField("email", "john@example.com", FieldConfig.keyword())
-                .addField("age", 30, FieldConfig.number(FieldConfig.FieldType.INTEGER))
+                .addField("name", "John Doe", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("email", "john@example.com", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build())
+                .addField("age", 30, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build())
                 .addField("bio", "Software engineer passionate about search engines",
-                        FieldConfig.indexedOnly());
+                        FieldConfig.builder().stored(false).indexed(true).tokenized(true).build());
 
         // Add multi-valued field (tags)
         synapseDoc.addFields("tags", List.of("java", "lucene", "search"),
-                FieldConfig.keyword());
+                FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build());
         System.out.println(synapseDoc.toString());
         // Convert to Lucene
         Document luceneDoc = DocumentConverter.toLuceneDocument(synapseDoc);
@@ -73,19 +74,19 @@ public class Main {
         System.out.println("=== Example 3: Complex Document ===");
 
         io.synapsedb.core.document.Document product = new io.synapsedb.core.document.Document("product-789")
-                .addField("name", "Laptop", FieldConfig.text())
-                .addField("sku", "LAPTOP-001", FieldConfig.keyword())
-                .addField("price", 999.99, FieldConfig.number(FieldConfig.FieldType.DOUBLE))
-                .addField("inStock", true, FieldConfig.keyword())
+                .addField("name", "Laptop", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("sku", "LAPTOP-001", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build())
+                .addField("price", 999.99, FieldConfig.builder().type(FieldType.DOUBLE).tokenized(false).build())
+                .addField("inStock", true, FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build())
                 .addField("createdAt", new Date(),
-                        FieldConfig.defaults().setType(FieldConfig.FieldType.DATE))
+                        FieldConfig.builder().type(FieldType.DATE).tokenized(false).build())
                 .addField("description", "High-performance laptop for developers",
-                        FieldConfig.text());
+                        FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         // Add categories
         product.addFields("categories",
                 List.of("Electronics", "Computers", "Laptops"),
-                FieldConfig.keyword());
+                FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build());
 
         // Convert and back
         Document luceneDoc = DocumentConverter.toLuceneDocument(product);

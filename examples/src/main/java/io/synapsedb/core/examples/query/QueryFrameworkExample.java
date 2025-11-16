@@ -2,6 +2,7 @@ package io.synapsedb.core.examples.query;
 
 import io.synapsedb.core.document.Document;
 import io.synapsedb.core.document.FieldConfig;
+import io.synapsedb.core.document.FieldType;
 import io.synapsedb.core.index.Index;
 import io.synapsedb.core.index.IndexManager;
 import io.synapsedb.core.index.IndexSettings;
@@ -80,12 +81,12 @@ public class QueryFrameworkExample {
             String brand = brands[i % brands.length];
 
             Document doc = new Document("PROD-" + i);
-            doc.addField("name", brand + " Product " + i, FieldConfig.text().setStored(true));
+            doc.addField("name", brand + " Product " + i, FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
             doc.addField("description", "Great product for your needs. High quality and affordable.",
-                FieldConfig.text().setStored(true));
-            doc.addField("category", category, FieldConfig.keyword().setStored(true));
-            doc.addField("brand", brand, FieldConfig.keyword().setStored(true));
-            doc.addField("price", String.valueOf(i * 50), FieldConfig.text().setStored(true));
+                FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            doc.addField("category", category, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            doc.addField("brand", brand, FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
+            doc.addField("price", String.valueOf(i * 50), FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
 
             products.add(doc);
         }

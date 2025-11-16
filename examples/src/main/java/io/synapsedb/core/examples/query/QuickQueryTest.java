@@ -2,6 +2,7 @@ package io.synapsedb.core.examples.query;
 
 import io.synapsedb.core.document.Document;
 import io.synapsedb.core.document.FieldConfig;
+import io.synapsedb.core.document.FieldType;
 import io.synapsedb.core.index.Index;
 import io.synapsedb.core.index.IndexManager;
 import io.synapsedb.core.index.IndexSettings;
@@ -32,12 +33,12 @@ public class QuickQueryTest {
             // Index some data
             IndexOperations ops = new IndexOperations(index);
             Document doc1 = new Document("1");
-            doc1.addField("name", "Laptop", FieldConfig.text().setStored(true));
-            doc1.addField("category", "Electronics", FieldConfig.keyword().setStored(true));
+            doc1.addField("name", "Laptop", FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            doc1.addField("category", "Electronics", FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
 
             Document doc2 = new Document("2");
-            doc2.addField("name", "Book", FieldConfig.text().setStored(true));
-            doc2.addField("category", "Books", FieldConfig.keyword().setStored(true));
+            doc2.addField("name", "Book", FieldConfig.builder().type(FieldType.TEXT).stored(true).tokenized(true).build());
+            doc2.addField("category", "Books", FieldConfig.builder().type(FieldType.KEYWORD).stored(true).tokenized(false).build());
 
             ops.add(doc1);
             ops.add(doc2);

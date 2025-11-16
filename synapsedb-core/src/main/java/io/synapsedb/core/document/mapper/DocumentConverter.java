@@ -2,6 +2,7 @@ package io.synapsedb.core.document.mapper;
 
 import io.synapsedb.core.common.helpers.TypeConversionHelpers;
 import io.synapsedb.core.document.FieldConfig;
+import io.synapsedb.core.document.FieldType;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.util.BytesRef;
@@ -12,6 +13,7 @@ import java.util.*;
 /**
  * Converts between SynapseDoc and Lucene Document
  * Handles proper storage and retrieval without duplication
+ * @author Amit Tiwari
  */
 public class DocumentConverter {
 
@@ -286,26 +288,46 @@ public class DocumentConverter {
      * Infer field config from Lucene field
      */
     private static FieldConfig inferFieldConfig(IndexableField field) {
-        FieldConfig config = FieldConfig.defaults();
-
         if (field instanceof TextField) {
-            config.setType(FieldConfig.FieldType.TEXT).setTokenized(true);
+            return FieldConfig.builder()
+                    .type(FieldType.TEXT)
+                    .tokenized(true)
+                    .build();
         } else if (field instanceof StringField) {
-            config.setType(FieldConfig.FieldType.KEYWORD).setTokenized(false);
+            return FieldConfig.builder()
+                    .type(FieldType.KEYWORD)
+                    .tokenized(false)
+                    .build();
         } else if (field instanceof IntPoint) {
-            config.setType(FieldConfig.FieldType.INTEGER).setTokenized(false);
+            return FieldConfig.builder()
+                    .type(FieldType.INTEGER)
+                    .tokenized(false)
+                    .build();
         } else if (field instanceof LongPoint) {
-            config.setType(FieldConfig.FieldType.LONG).setTokenized(false);
+            return FieldConfig.builder()
+                    .type(FieldType.LONG)
+                    .tokenized(false)
+                    .build();
         } else if (field instanceof DoublePoint) {
-            config.setType(FieldConfig.FieldType.DOUBLE).setTokenized(false);
+            return FieldConfig.builder()
+                    .type(FieldType.DOUBLE)
+                    .tokenized(false)
+                    .build();
         } else if (field instanceof FloatPoint) {
-            config.setType(FieldConfig.FieldType.FLOAT).setTokenized(false);
+            return FieldConfig.builder()
+                    .type(FieldType.FLOAT)
+                    .tokenized(false)
+                    .build();
         } else if (field instanceof StoredField) {
-            config.setStored(true);
-            config.setIndexed(false);
+            return FieldConfig.builder()
+                    .stored(true)
+                    .indexed(false)
+                    .tokenized(false)
+                    .build();
         }
 
-        return config;
+        // Default fallback
+        return FieldConfig.builder().build();
     }
 
 }

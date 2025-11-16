@@ -26,7 +26,7 @@ public class Document {
 
     // Add single value
     public Document addField(String name, Object value) {
-        return addField(name, value, FieldConfig.defaults());
+        return addField(name, value, FieldConfig.builder().build());
     }
 
     public Document addField(String name, Object value, FieldConfig config) {
@@ -37,7 +37,7 @@ public class Document {
 
     // Set field value (replaces existing value)
     public Document setField(String name, Object value) {
-        return setField(name, value, FieldConfig.defaults());
+        return setField(name, value, FieldConfig.builder().build());
     }
 
     public Document setField(String name, Object value, FieldConfig config) {
@@ -50,7 +50,7 @@ public class Document {
 
     // Add multiple values
     public Document addFields(String name, List<Object> values) {
-        return addFields(name, values, FieldConfig.defaults());
+        return addFields(name, values, FieldConfig.builder().build());
     }
 
     public Document addFields(String name, List<Object> values, FieldConfig config) {
@@ -86,7 +86,7 @@ public class Document {
     }
 
     public FieldConfig getFieldConfig(String name) {
-        return fieldConfigs.getOrDefault(name, FieldConfig.defaults());
+        return fieldConfigs.getOrDefault(name, FieldConfig.builder().build());
     }
 
     public boolean hasField(String name) {

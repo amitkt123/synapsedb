@@ -51,8 +51,8 @@ class IntegrationTest {
     void testIndexAndSearchSingleDocument() throws IOException {
         // Create SynapseDB document
         io.synapsedb.core.document.Document synapseDoc = new io.synapsedb.core.document.Document("doc1")
-                .addField("title", "Java Programming", FieldConfig.text())
-                .addField("content", "Learn Java basics and advanced concepts", FieldConfig.text());
+                .addField("title", "Java Programming", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("content", "Learn Java basics and advanced concepts", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         // Convert and index
         Document luceneDoc = DocumentConverter.toLuceneDocument(synapseDoc);
@@ -82,13 +82,13 @@ class IntegrationTest {
     void testIndexAndSearchMultipleDocuments() throws IOException {
         // Index 3 documents
         io.synapsedb.core.document.Document doc1 = new io.synapsedb.core.document.Document("doc1")
-                .addField("title", "Java Programming", FieldConfig.text());
+                .addField("title", "Java Programming", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         io.synapsedb.core.document.Document doc2 = new io.synapsedb.core.document.Document("doc2")
-                .addField("title", "Python Guide", FieldConfig.text());
+                .addField("title", "Python Guide", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         io.synapsedb.core.document.Document doc3 = new io.synapsedb.core.document.Document("doc3")
-                .addField("title", "Java Advanced", FieldConfig.text());
+                .addField("title", "Java Advanced", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc1));
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc2));
@@ -111,7 +111,7 @@ class IntegrationTest {
     void testIndexAndSearchWithKeywordField() throws IOException {
         // Keyword fields are not analyzed (exact match)
         io.synapsedb.core.document.Document doc = new io.synapsedb.core.document.Document("doc1")
-                .addField("email", "john@example.com", FieldConfig.keyword());
+                .addField("email", "john@example.com", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build());
 
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc));
         indexWriter.commit();
@@ -136,13 +136,13 @@ class IntegrationTest {
     void testIndexAndSearchNumericField() throws IOException {
         // Index documents with numeric fields
         io.synapsedb.core.document.Document doc1 = new io.synapsedb.core.document.Document("doc1")
-                .addField("price", 50L, FieldConfig.number(FieldConfig.FieldType.LONG));
+                .addField("price", 50L, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build());
 
         io.synapsedb.core.document.Document doc2 = new io.synapsedb.core.document.Document("doc2")
-                .addField("price", 100L, FieldConfig.number(FieldConfig.FieldType.LONG));
+                .addField("price", 100L, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build());
 
         io.synapsedb.core.document.Document doc3 = new io.synapsedb.core.document.Document("doc3")
-                .addField("price", 150L, FieldConfig.number(FieldConfig.FieldType.LONG));
+                .addField("price", 150L, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build());
 
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc1));
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc2));
@@ -173,7 +173,7 @@ class IntegrationTest {
     void testIndexAndSearchMultiValuedField() throws IOException {
         // Document with multiple tags
         io.synapsedb.core.document.Document doc = new io.synapsedb.core.document.Document("doc1")
-                .addField("title", "Search Engine Tutorial", FieldConfig.text());
+                .addField("title", "Search Engine Tutorial", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         doc.addField("tag", "java");
         doc.addField("tag", "lucene");
@@ -206,11 +206,11 @@ class IntegrationTest {
     @Test
     void testIndexedOnlyFieldNotRetrievable() throws IOException {
         // Field that's indexed but not stored
-        FieldConfig config = FieldConfig.indexedOnly();
+        FieldConfig config = FieldConfig.builder().stored(false).indexed(true).tokenized(true).build();
 
         io.synapsedb.core.document.Document doc = new io.synapsedb.core.document.Document("doc1")
                 .addField("searchable", "This can be searched", config)
-                .addField("title", "Visible Title", FieldConfig.text());
+                .addField("title", "Visible Title", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc));
         indexWriter.commit();
@@ -275,13 +275,13 @@ class IntegrationTest {
     void testComplexDocumentWorkflow() throws IOException {
         // Create a complex document with various field types
         io.synapsedb.core.document.Document product = new io.synapsedb.core.document.Document("product-123")
-                .addField("name", "Laptop Computer", FieldConfig.text())
-                .addField("description", "High-performance laptop with SSD", FieldConfig.text())
-                .addField("brand", "TechCorp", FieldConfig.keyword())
-                .addField("category", "Electronics", FieldConfig.keyword())
-                .addField("price", 999.99, FieldConfig.number(FieldConfig.FieldType.DOUBLE))
-                .addField("stock", 50, FieldConfig.number(FieldConfig.FieldType.INTEGER))
-                .addField("active", true, FieldConfig.defaults().setType(FieldConfig.FieldType.BOOLEAN));
+                .addField("name", "Laptop Computer", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("description", "High-performance laptop with SSD", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("brand", "TechCorp", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build())
+                .addField("category", "Electronics", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build())
+                .addField("price", 999.99, FieldConfig.builder().type(FieldType.DOUBLE).tokenized(false).build())
+                .addField("stock", 50, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build())
+                .addField("active", true, FieldConfig.builder().type(FieldType.BOOLEAN).tokenized(false).build());
 
         product.addField("tag", "computer");
         product.addField("tag", "electronics");
@@ -325,16 +325,16 @@ class IntegrationTest {
     void testUpdateDocument() throws IOException {
         // Index original document
         io.synapsedb.core.document.Document original = new io.synapsedb.core.document.Document("doc1")
-                .addField("title", "Original Title", FieldConfig.text())
-                .addField("version", 1, FieldConfig.number(FieldConfig.FieldType.INTEGER));
+                .addField("title", "Original Title", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("version", 1, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build());
 
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(original));
         indexWriter.commit();
 
         // Update document (in Lucene, this is delete + add)
         io.synapsedb.core.document.Document updated = new io.synapsedb.core.document.Document("doc1")
-                .addField("title", "Updated Title", FieldConfig.text())
-                .addField("version", 2, FieldConfig.number(FieldConfig.FieldType.INTEGER));
+                .addField("title", "Updated Title", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("version", 2, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build());
 
         indexWriter.updateDocument(
                 new Term("_id", "doc1"),
@@ -363,10 +363,10 @@ class IntegrationTest {
     void testDeleteDocument() throws IOException {
         // Index two documents
         io.synapsedb.core.document.Document doc1 = new io.synapsedb.core.document.Document("doc1")
-                .addField("title", "Document 1", FieldConfig.text());
+                .addField("title", "Document 1", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         io.synapsedb.core.document.Document doc2 = new io.synapsedb.core.document.Document("doc2")
-                .addField("title", "Document 2", FieldConfig.text());
+                .addField("title", "Document 2", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc1));
         indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc2));
@@ -398,8 +398,8 @@ class IntegrationTest {
         // Index 100 documents
         for (int i = 0; i < 100; i++) {
             io.synapsedb.core.document.Document doc = new io.synapsedb.core.document.Document("doc" + i)
-                    .addField("title", "Document " + i, FieldConfig.text())
-                    .addField("number", i, FieldConfig.number(FieldConfig.FieldType.INTEGER));
+                    .addField("title", "Document " + i, FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                    .addField("number", i, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build());
 
             indexWriter.addDocument(DocumentConverter.toLuceneDocument(doc));
         }

@@ -2,7 +2,11 @@ package io.synapsedb.core.document.mapper;
 
 import io.synapsedb.core.document.Document;
 import io.synapsedb.core.document.FieldConfig;
-import org.apache.lucene.document.*;
+import io.synapsedb.core.document.FieldType;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexableField;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +75,7 @@ class DocumentConverterTest {
 
     @Test
     void testConvertDocumentWithTextField() {
-        synapseDoc.addField("title", "Test Title", FieldConfig.text());
+        synapseDoc.addField("title", "Test Title", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -82,12 +86,12 @@ class DocumentConverterTest {
 
         // Verify field type
         IndexableField field = luceneDoc.getField("title");
-        assertTrue(field instanceof TextField);
+        assertInstanceOf(TextField.class, field);
     }
 
     @Test
     void testConvertDocumentWithKeywordField() {
-        synapseDoc.addField("category", "Technology", FieldConfig.keyword());
+        synapseDoc.addField("category", "Technology", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -95,14 +99,14 @@ class DocumentConverterTest {
         assertEquals("Technology", luceneDoc.get("category"));
 
         IndexableField field = luceneDoc.getField("category");
-        assertTrue(field instanceof StringField);
+        assertInstanceOf(StringField.class, field);
     }
 
     // ============ Numeric Field Tests ============
 
     @Test
     void testConvertLongField() {
-        synapseDoc.addField("count", 12345L, FieldConfig.number(FieldConfig.FieldType.LONG));
+        synapseDoc.addField("count", 12345L, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -118,7 +122,7 @@ class DocumentConverterTest {
 
     @Test
     void testConvertIntegerField() {
-        synapseDoc.addField("age", 30, FieldConfig.number(FieldConfig.FieldType.INTEGER));
+        synapseDoc.addField("age", 30, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -129,7 +133,7 @@ class DocumentConverterTest {
 
     @Test
     void testConvertDoubleField() {
-        synapseDoc.addField("price", 99.99, FieldConfig.number(FieldConfig.FieldType.DOUBLE));
+        synapseDoc.addField("price", 99.99, FieldConfig.builder().type(FieldType.DOUBLE).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -140,7 +144,7 @@ class DocumentConverterTest {
 
     @Test
     void testConvertFloatField() {
-        synapseDoc.addField("rating", 4.5f, FieldConfig.number(FieldConfig.FieldType.FLOAT));
+        synapseDoc.addField("rating", 4.5f, FieldConfig.builder().type(FieldType.FLOAT).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -153,9 +157,12 @@ class DocumentConverterTest {
 
     @Test
     void testStoredAndIndexedField() {
-        FieldConfig config = FieldConfig.text()
-                .setStored(true)
-                .setIndexed(true);
+        FieldConfig config = FieldConfig.builder()
+                .type(FieldType.TEXT)
+                .stored(true)
+                .indexed(true)
+                .tokenized(true)
+                .build();
 
         synapseDoc.addField("content", "Searchable content", config);
 
@@ -167,7 +174,11 @@ class DocumentConverterTest {
 
     @Test
     void testIndexedOnlyField() {
-        FieldConfig config = FieldConfig.indexedOnly();
+        FieldConfig config = FieldConfig.builder()
+                .stored(false)
+                .indexed(true)
+                .tokenized(true)
+                .build();
 
         synapseDoc.addField("searchable", "Search but don't store", config);
 
@@ -200,7 +211,7 @@ class DocumentConverterTest {
 
     @Test
     void testRoundTripWithTextField() {
-        synapseDoc.addField("title", "Original Title", FieldConfig.text());
+        synapseDoc.addField("title", "Original Title", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -213,7 +224,7 @@ class DocumentConverterTest {
 
     @Test
     void testRoundTripWithKeywordField() {
-        synapseDoc.addField("category", "Tech", FieldConfig.keyword());
+        synapseDoc.addField("category", "Tech", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -225,7 +236,7 @@ class DocumentConverterTest {
 
     @Test
     void testRoundTripWithNumericField() {
-        synapseDoc.addField("count", 42L, FieldConfig.number(FieldConfig.FieldType.LONG));
+        synapseDoc.addField("count", 42L, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -240,9 +251,9 @@ class DocumentConverterTest {
 
     @Test
     void testRoundTripWithMultipleFields() {
-        synapseDoc.addField("title", "Test", FieldConfig.text());
-        synapseDoc.addField("category", "Tech", FieldConfig.keyword());
-        synapseDoc.addField("count", 100, FieldConfig.number(FieldConfig.FieldType.INTEGER));
+        synapseDoc.addField("title", "Test", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build());
+        synapseDoc.addField("category", "Tech", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build());
+        synapseDoc.addField("count", 100, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -297,7 +308,7 @@ class DocumentConverterTest {
     @Test
     void testBooleanField() {
         synapseDoc.addField("active", true,
-                FieldConfig.defaults().setType(FieldConfig.FieldType.BOOLEAN));
+                FieldConfig.builder().type(FieldType.BOOLEAN).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -311,7 +322,7 @@ class DocumentConverterTest {
     void testDateField() {
         long timestamp = System.currentTimeMillis();
         synapseDoc.addField("created", timestamp,
-                FieldConfig.defaults().setType(FieldConfig.FieldType.DATE));
+                FieldConfig.builder().type(FieldType.DATE).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -324,7 +335,7 @@ class DocumentConverterTest {
     void testBinaryField() {
         byte[] data = {1, 2, 3, 4, 5};
         synapseDoc.addField("data", data,
-                FieldConfig.defaults().setType(FieldConfig.FieldType.BINARY));
+                FieldConfig.builder().type(FieldType.BINARY).tokenized(false).build());
 
         org.apache.lucene.document.Document luceneDoc =
                 DocumentConverter.toLuceneDocument(synapseDoc);
@@ -350,12 +361,12 @@ class DocumentConverterTest {
 @Test
 void testConvertComplexDocument() {
     synapseDoc
-            .addField("title", "Complex Document", FieldConfig.text())
-            .addField("category", "Technology", FieldConfig.keyword())
-            .addField("price", 99.99, FieldConfig.number(FieldConfig.FieldType.DOUBLE))
-            .addField("quantity", 10, FieldConfig.number(FieldConfig.FieldType.INTEGER))
-            .addField("active", true, FieldConfig.defaults().setType(FieldConfig.FieldType.BOOLEAN))
-            .addField("created", System.currentTimeMillis(), FieldConfig.defaults().setType(FieldConfig.FieldType.DATE));
+            .addField("title", "Complex Document", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+            .addField("category", "Technology", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build())
+            .addField("price", 99.99, FieldConfig.builder().type(FieldType.DOUBLE).tokenized(false).build())
+            .addField("quantity", 10, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build())
+            .addField("active", true, FieldConfig.builder().type(FieldType.BOOLEAN).tokenized(false).build())
+            .addField("created", System.currentTimeMillis(), FieldConfig.builder().type(FieldType.DATE).tokenized(false).build());
 
     synapseDoc.addField("tag", "java");
     synapseDoc.addField("tag", "lucene");
@@ -373,9 +384,9 @@ void testConvertComplexDocument() {
 @Test
 void testRoundTripComplexDocument() {
     synapseDoc
-            .addField("title", "Complex Document", FieldConfig.text())
-            .addField("category", "Technology", FieldConfig.keyword())
-            .addField("count", 100L, FieldConfig.number(FieldConfig.FieldType.LONG));
+            .addField("title", "Complex Document", FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+            .addField("category", "Technology", FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build())
+            .addField("count", 100L, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build());
 
     synapseDoc.addField("tag", "java");
     synapseDoc.addField("tag", "lucene");

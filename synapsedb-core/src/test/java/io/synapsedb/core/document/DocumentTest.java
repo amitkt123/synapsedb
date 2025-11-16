@@ -55,7 +55,7 @@ class DocumentTest {
 
     @Test
     void testAddFieldWithConfig() {
-        FieldConfig config = FieldConfig.keyword();
+        FieldConfig config = FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build();
         document.addField("category", "Technology", config);
 
         assertTrue(document.hasField("category"));
@@ -99,7 +99,7 @@ class DocumentTest {
     @Test
     void testAddFieldsWithConfig() {
         List<Object> keywords = Arrays.asList("java", "lucene", "search");
-        FieldConfig config = FieldConfig.keyword();
+        FieldConfig config = FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build();
 
         document.addFields("keywords", keywords, config);
 
@@ -162,7 +162,7 @@ class DocumentTest {
 
     @Test
     void testGetFieldConfig() {
-        FieldConfig config = FieldConfig.keyword();
+        FieldConfig config = FieldConfig.builder().type(FieldType.KEYWORD).tokenized(false).build();
         document.addField("id", "123", config);
 
         assertEquals(config, document.getFieldConfig("id"));
@@ -302,10 +302,10 @@ class DocumentTest {
 
     @Test
     void testAddNumericFields() {
-        document.addField("integer", 42, FieldConfig.number(FieldConfig.FieldType.INTEGER));
-        document.addField("long", 123456789L, FieldConfig.number(FieldConfig.FieldType.LONG));
-        document.addField("double", 3.14159, FieldConfig.number(FieldConfig.FieldType.DOUBLE));
-        document.addField("float", 2.71828f, FieldConfig.number(FieldConfig.FieldType.FLOAT));
+        document.addField("integer", 42, FieldConfig.builder().type(FieldType.INTEGER).tokenized(false).build());
+        document.addField("long", 123456789L, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build());
+        document.addField("double", 3.14159, FieldConfig.builder().type(FieldType.DOUBLE).tokenized(false).build());
+        document.addField("float", 2.71828f, FieldConfig.builder().type(FieldType.FLOAT).tokenized(false).build());
 
         assertEquals(42, document.getField("integer"));
         assertEquals(123456789L, document.getField("long"));
@@ -315,7 +315,7 @@ class DocumentTest {
 
     @Test
     void testAddBooleanField() {
-        document.addField("active", true, FieldConfig.defaults().setType(FieldConfig.FieldType.BOOLEAN));
+        document.addField("active", true, FieldConfig.builder().type(FieldType.BOOLEAN).build());
 
         assertEquals(true, document.getField("active"));
     }
@@ -323,7 +323,7 @@ class DocumentTest {
     @Test
     void testAddDateField() {
         long timestamp = System.currentTimeMillis();
-        document.addField("created", timestamp, FieldConfig.defaults().setType(FieldConfig.FieldType.DATE));
+        document.addField("created", timestamp, FieldConfig.builder().type(FieldType.DATE).build());
 
         assertEquals(timestamp, document.getField("created"));
     }
@@ -331,7 +331,7 @@ class DocumentTest {
     @Test
     void testAddBinaryField() {
         byte[] data = {1, 2, 3, 4, 5};
-        document.addField("data", data, FieldConfig.defaults().setType(FieldConfig.FieldType.BINARY));
+        document.addField("data", data, FieldConfig.builder().type(FieldType.BINARY).build());
 
         assertArrayEquals(data, (byte[]) document.getField("data"));
     }

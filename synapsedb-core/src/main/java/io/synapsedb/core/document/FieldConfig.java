@@ -1,93 +1,73 @@
 package io.synapsedb.core.document;
 
+import java.util.Objects;
+
 /**
  * Configuration for a document field (stored, indexed, tokenized, type)
  * @author Amit Tiwari
  * Configuration for how a field should be indexed and stored
  */
 public class FieldConfig {
-    private boolean stored;           // Should be stored?
-    private boolean indexed;          // Should be indexed?
-    private boolean tokenized;        // Should be analyzed/tokenized?
-    private FieldType type;           // Data type
+    private final boolean stored;
+    private final boolean indexed;
+    private final boolean tokenized;
+    private final FieldType type;
 
-    public enum FieldType {
-        TEXT,           // Full-text searchable
-        KEYWORD,        // Exact match, not tokenized
-        LONG,           // Numeric long
-        INTEGER,        // Numeric int
-        DOUBLE,         // Numeric double
-        FLOAT,          // Numeric float
-        BOOLEAN,        // Boolean
-        DATE,           // Date/timestamp
-        BINARY,         // Binary data
-        OBJECT          // Nested object
+    private FieldConfig(Builder builder) {
+        this.stored = builder.stored;
+        this.indexed = builder.indexed;
+        this.tokenized = builder.tokenized;
+        this.type = builder.type;
     }
 
-    private FieldConfig() {}
-
-    public static FieldConfig defaults() {
-        return new FieldConfig()
-                .setStored(true)
-                .setIndexed(true)
-                .setTokenized(true)
-                .setType(FieldType.TEXT);
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static FieldConfig text() {
-        return defaults()
-                .setType(FieldType.TEXT)
-                .setTokenized(true);
+    public static class Builder {
+        private boolean stored = true;
+        private boolean indexed = true;
+        private boolean tokenized = true;
+        private FieldType type = FieldType.TEXT;
+
+        public Builder stored(boolean stored) {
+            this.stored = stored;
+            return this;
+        }
+
+        public Builder indexed(boolean indexed) {
+            this.indexed = indexed;
+            return this;
+        }
+
+        public Builder tokenized(boolean tokenized) {
+            this.tokenized = tokenized;
+            return this;
+        }
+
+        public Builder type(FieldType type) {
+            this.type = Objects.requireNonNull(type, "FieldType cannot be null");
+            return this;
+        }
+
+        public FieldConfig build() {
+            validate();
+            return new FieldConfig(this);
+        }
+
+        private void validate() {
+            if (tokenized && type != FieldType.TEXT && type != FieldType.KEYWORD) {
+                throw new IllegalStateException(
+                        "Tokenization only applies to TEXT and KEYWORD types");
+            }
+            if (!indexed && !stored) {
+                throw new IllegalStateException(
+                        "Field must be either indexed or stored (or both)");
+            }
+        }
     }
 
-    public static FieldConfig keyword() {
-        return defaults()
-                .setType(FieldType.KEYWORD)
-                .setTokenized(false);
-    }
-
-    public static FieldConfig number(FieldType type) {
-        return defaults()
-                .setType(type)
-                .setTokenized(false);
-    }
-
-    public static FieldConfig storedOnly() {
-        return new FieldConfig()
-                .setStored(true)
-                .setIndexed(false);
-    }
-
-    public static FieldConfig indexedOnly() {
-        return new FieldConfig()
-                .setStored(false)
-                .setIndexed(true)
-                .setTokenized(true)
-                .setType(FieldType.TEXT);
-    }
-
-    // Fluent setters
-    public FieldConfig setStored(boolean stored) {
-        this.stored = stored;
-        return this;
-    }
-
-    public FieldConfig setIndexed(boolean indexed) {
-        this.indexed = indexed;
-        return this;
-    }
-
-    public FieldConfig setTokenized(boolean tokenized) {
-        this.tokenized = tokenized;
-        return this;
-    }
-
-    public FieldConfig setType(FieldType type) {
-        this.type = type;
-        return this;
-    }
-
-    // Getters
+    // Getters only
     public boolean isStored() { return stored; }
     public boolean isIndexed() { return indexed; }
     public boolean isTokenized() { return tokenized; }

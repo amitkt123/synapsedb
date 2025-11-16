@@ -1,57 +1,70 @@
+// java
 package io.synapsedb.core.document;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for FieldConfig
- * @author Amit Tiwari
+ * Unit tests for FieldConfig (refactored to use builder and top-level FieldType)
  */
 class FieldConfigTest {
 
     @Test
     void testDefaultConfig() {
-        FieldConfig config = FieldConfig.defaults();
+        FieldConfig config = FieldConfig.builder().build();
 
         assertTrue(config.isStored());
         assertTrue(config.isIndexed());
         assertTrue(config.isTokenized());
-        assertEquals(FieldConfig.FieldType.TEXT, config.getType());
+        assertEquals(FieldType.TEXT, config.getType());
     }
 
     @Test
     void testTextConfig() {
-        FieldConfig config = FieldConfig.text();
+        FieldConfig config = FieldConfig.builder()
+                .type(FieldType.TEXT)
+                .tokenized(true)
+                .build();
 
         assertTrue(config.isStored());
         assertTrue(config.isIndexed());
         assertTrue(config.isTokenized());
-        assertEquals(FieldConfig.FieldType.TEXT, config.getType());
+        assertEquals(FieldType.TEXT, config.getType());
     }
 
     @Test
     void testKeywordConfig() {
-        FieldConfig config = FieldConfig.keyword();
+        FieldConfig config = FieldConfig.builder()
+                .type(FieldType.KEYWORD)
+                .tokenized(false)
+                .build();
 
         assertTrue(config.isStored());
         assertTrue(config.isIndexed());
         assertFalse(config.isTokenized());
-        assertEquals(FieldConfig.FieldType.KEYWORD, config.getType());
+        assertEquals(FieldType.KEYWORD, config.getType());
     }
 
     @Test
     void testNumericConfig() {
-        FieldConfig config = FieldConfig.number(FieldConfig.FieldType.LONG);
+        FieldConfig config = FieldConfig.builder()
+                .type(FieldType.LONG)
+                .tokenized(false)
+                .build();
 
         assertTrue(config.isStored());
         assertTrue(config.isIndexed());
         assertFalse(config.isTokenized());
-        assertEquals(FieldConfig.FieldType.LONG, config.getType());
+        assertEquals(FieldType.LONG, config.getType());
     }
 
     @Test
     void testStoredOnlyConfig() {
-        FieldConfig config = FieldConfig.storedOnly();
+        FieldConfig config = FieldConfig.builder()
+                .stored(true)
+                .indexed(false)
+                .tokenized(false)
+                .build();
 
         assertTrue(config.isStored());
         assertFalse(config.isIndexed());
@@ -59,7 +72,11 @@ class FieldConfigTest {
 
     @Test
     void testIndexedOnlyConfig() {
-        FieldConfig config = FieldConfig.indexedOnly();
+        FieldConfig config = FieldConfig.builder()
+                .stored(false)
+                .indexed(true)
+                .tokenized(false)
+                .build();
 
         assertFalse(config.isStored());
         assertTrue(config.isIndexed());
@@ -67,44 +84,46 @@ class FieldConfigTest {
 
     @Test
     void testFluentAPI() {
-        FieldConfig config = FieldConfig.defaults()
-                .setStored(false)
-                .setIndexed(true)
-                .setTokenized(false)
-                .setType(FieldConfig.FieldType.KEYWORD);
+        FieldConfig config = FieldConfig.builder()
+                .stored(false)
+                .indexed(true)
+                .tokenized(false)
+                .type(FieldType.KEYWORD)
+                .build();
 
         assertFalse(config.isStored());
         assertTrue(config.isIndexed());
         assertFalse(config.isTokenized());
-        assertEquals(FieldConfig.FieldType.KEYWORD, config.getType());
+        assertEquals(FieldType.KEYWORD, config.getType());
     }
 
     @Test
     void testAllFieldTypes() {
-        FieldConfig.FieldType[] types = FieldConfig.FieldType.values();
+        FieldType[] types = FieldType.values();
 
         assertTrue(types.length >= 10);
 
         // Verify specific types exist
-        assertNotNull(FieldConfig.FieldType.TEXT);
-        assertNotNull(FieldConfig.FieldType.KEYWORD);
-        assertNotNull(FieldConfig.FieldType.LONG);
-        assertNotNull(FieldConfig.FieldType.INTEGER);
-        assertNotNull(FieldConfig.FieldType.DOUBLE);
-        assertNotNull(FieldConfig.FieldType.FLOAT);
-        assertNotNull(FieldConfig.FieldType.BOOLEAN);
-        assertNotNull(FieldConfig.FieldType.DATE);
-        assertNotNull(FieldConfig.FieldType.BINARY);
-        assertNotNull(FieldConfig.FieldType.OBJECT);
+        assertNotNull(FieldType.TEXT);
+        assertNotNull(FieldType.KEYWORD);
+        assertNotNull(FieldType.LONG);
+        assertNotNull(FieldType.INTEGER);
+        assertNotNull(FieldType.DOUBLE);
+        assertNotNull(FieldType.FLOAT);
+        assertNotNull(FieldType.BOOLEAN);
+        assertNotNull(FieldType.DATE);
+        assertNotNull(FieldType.BINARY);
+        assertNotNull(FieldType.OBJECT);
     }
 
     @Test
     void testConfigImmutability() {
-        FieldConfig config1 = FieldConfig.text();
-        FieldConfig config2 = config1.setStored(false);
+        FieldConfig config1 = FieldConfig.builder().build();
+        FieldConfig config2 = FieldConfig.builder().stored(false).build();
 
-        // Fluent API returns same object (mutable)
-        assertSame(config1, config2);
-        assertFalse(config1.isStored());
+        // New builder builds a different instance; original remains unchanged
+        assertNotSame(config1, config2);
+        assertTrue(config1.isStored());
+        assertFalse(config2.isStored());
     }
 }

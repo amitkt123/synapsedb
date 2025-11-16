@@ -2,6 +2,7 @@ package io.synapsedb.core.examples.operations;
 
 import io.synapsedb.core.document.Document;
 import io.synapsedb.core.document.FieldConfig;
+import io.synapsedb.core.document.FieldType;
 import io.synapsedb.core.index.Index;
 import io.synapsedb.core.index.IndexManager;
 import io.synapsedb.core.index.IndexSettings;
@@ -81,9 +82,9 @@ public class OperationsExample {
         List<Document> docs = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             docs.add(new Document("doc-" + i)
-                .addField("title", "Document " + i, FieldConfig.text())
-                .addField("content", "This is the content of document " + i, FieldConfig.text())
-                .addField("number", (long) i, FieldConfig.number(FieldConfig.FieldType.LONG))
+                .addField("title", "Document " + i, FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("content", "This is the content of document " + i, FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("number", (long) i, FieldConfig.builder().type(FieldType.LONG).tokenized(false).build())
             );
         }
 
@@ -97,8 +98,8 @@ public class OperationsExample {
         List<Document> moreDocs = new ArrayList<>();
         for (int i = 11; i <= 15; i++) {
             moreDocs.add(new Document("doc-" + i)
-                .addField("title", "Document " + i, FieldConfig.text())
-                .addField("content", "More content " + i, FieldConfig.text())
+                .addField("title", "Document " + i, FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("content", "More content " + i, FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
             );
         }
 
@@ -118,9 +119,9 @@ public class OperationsExample {
         List<Document> updates = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             updates.add(new Document("doc-" + i)
-                .addField("title", "Updated Document " + i, FieldConfig.text())
-                .addField("content", "Updated content " + i, FieldConfig.text())
-                .addField("updated", true, FieldConfig.defaults())
+                .addField("title", "Updated Document " + i, FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("content", "Updated content " + i, FieldConfig.builder().type(FieldType.TEXT).tokenized(true).build())
+                .addField("updated", true, FieldConfig.builder().build())
             );
         }
 
