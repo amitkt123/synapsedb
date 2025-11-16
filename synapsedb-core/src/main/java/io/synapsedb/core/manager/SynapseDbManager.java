@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+//manager as a double checked singleton
 public class SynapseDbManager {
     private static volatile SynapseDbManager INSTANCE;
     private final ConcurrentHashMap<String, SynapseDB> databases;
@@ -28,7 +29,16 @@ public class SynapseDbManager {
     }
 
     public SynapseDB getDatabase(String dbName) {
-        lock.readLock().lock();
-
+      return databases.get(dbName);
     }
+
+    public SynapseDB registerDatabase(String dbName){
+        return databases.put(dbName, new SynapseDB());
+    }
+
+    public void removeDatabase(String dbName){
+        databases.remove(dbName);
+    }
+
+
 }
