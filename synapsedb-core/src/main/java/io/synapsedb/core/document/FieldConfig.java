@@ -47,6 +47,10 @@ public class FieldConfig {
 
         public Builder type(FieldType type) {
             this.type = Objects.requireNonNull(type, "FieldType cannot be null");
+            // Auto-adjust tokenized flag if type doesn't support tokenization
+            if (!type.allowsTokenization()) {
+                this.tokenized = false;
+            }
             return this;
         }
 
@@ -56,15 +60,25 @@ public class FieldConfig {
         }
 
         private void validate() {
-            if (tokenized && type != FieldType.TEXT && type != FieldType.KEYWORD) {
+            // 1. Tokenization only for types that allow it (TEXT, KEYWORD)
+            if (tokenized && !type.allowsTokenization()) {
                 throw new IllegalStateException(
-                        "Tokenization only applies to TEXT and KEYWORD types");
+                        "Tokenization is only allowed for TEXT or KEYWORD fields");
             }
+
+            // 2. Tokenization without indexing is also suspicious
+            if (tokenized && !indexed) {
+                throw new IllegalStateException(
+                        "Tokenization is only useful when the field is indexed");
+            }
+
+            // 3. Useless field guard
             if (!indexed && !stored) {
                 throw new IllegalStateException(
                         "Field must be either indexed or stored (or both)");
             }
         }
+
     }
 
     // Getters only

@@ -250,7 +250,7 @@ class DocumentTest {
         document.addField("title", "Test");
 
         String errors = document.getValidationErrors();
-        assertTrue(errors.isEmpty() || errors.isBlank());
+        assertTrue(errors.isBlank());
     }
 
     // ============ Edge Cases ============
